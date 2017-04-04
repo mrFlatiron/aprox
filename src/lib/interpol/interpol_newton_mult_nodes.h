@@ -18,11 +18,26 @@ namespace interpol
   public:
     newton_mult_nodes ();
     virtual ~newton_mult_nodes ();
-    newton_mult_nodes (const double *three_in_one, const unsigned int size_of_one); //three_in_one = xes+ys+derivs;
+//    newton_mult_nodes (const double *three_in_one, const unsigned int size_of_one); //three_in_one = xes+ys+derivs;
     newton_mult_nodes (const std::vector<double> &xes, const std::vector<double> &ys,
                       const std::vector<double> &derivs);
+    newton_mult_nodes (const double a_, const double b_,
+                       const unsigned int points_count,
+                       std::function<double(const double)> f,
+                       std::function<double(const double)> d);
+    virtual void interpolate_function (const double a_, const double b_,
+                              const unsigned int points_count,
+                              std::function<double(const double)> f,
+                              const std::vector<double> &additional) override;
+    virtual void interpolate_function (const double a_, const double b_,
+                                       const unsigned int points_count,
+                                       std::function<double(const double)> f,
+                                       std::function<double(const double)> d);
+    virtual void interpolate_points (const std::vector<double> &xes,
+                                     const std::vector<double> &ys,
+                                     const std::vector<double> &derivs) override;
     double operator () (const double x) const override;
-    static additional_array_size get_add_type ();
+    virtual additional_array_size get_add_type () const override;
     bool is_in_range (const double x) const;
     virtual int get_points_count () const override;
   private:

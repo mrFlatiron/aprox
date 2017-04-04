@@ -157,6 +157,7 @@ void abstract_plot_drawer::draw_graph (const int graph_num)
 void abstract_plot_drawer::redraw_all ()
 {
   clear ();
+  setSceneRect (m_x_min - 1, -1, m_x_max - m_x_min + 11, 10);
   int graphs_count = m_plot_model->graphs_count ();
 
   for (int i = 0; i < graphs_count; i++)

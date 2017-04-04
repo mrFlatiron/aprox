@@ -36,7 +36,8 @@ namespace interpol
       return nullptr;
 
     unsigned int add_size;
-    additional_array_size type =   T::get_add_type ();
+    T obj;
+    additional_array_size type =   obj.get_add_type ();
                                   //additional_array_size::x_size;
 
     switch (type)
@@ -85,6 +86,33 @@ namespace interpol
         return nullptr;
       }
     return  new T (a, b, points_count, f, additional);
+  }
+
+  template<class T>
+  T *create_polynom (const std::vector<double> &xes,
+                     const std::vector<double> &ys,
+                     const std::vector<double> &additional)
+  {
+    if (xes.size () < 2)
+      {
+        fprintf (stderr, "factory error: points count must be > 1\n");
+        return nullptr;
+      }
+    return  new T (xes, ys, additional);
+  }
+
+  template<class T>
+  T *create_polynom (const double a, const double b,
+                     const unsigned int points_count,
+                     std::function<double(const double)> f,
+                     std::function<double(const double)> d)
+  {
+    if (points_count < 2)
+      {
+        fprintf (stderr, "factory error: points count must be > 1\n");
+        return nullptr;
+      }
+    return  new T (a, b, points_count, f, d);
   }
 
 }

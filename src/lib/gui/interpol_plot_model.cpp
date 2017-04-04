@@ -8,7 +8,8 @@ interpol_plot_model::interpol_plot_model (const double x_min,
                                           const int points_count) :
   m_shown_count (0),
   m_interpols ((int)interpol::polynom_type::COUNT),
-  m_additionals ((int)interpol::polynom_type::COUNT),
+  m_additional_vectors ((int)interpol::polynom_type::COUNT),
+  m_additional_funcs ((int)interpol::polynom_type::COUNT),
   m_interpol_shown ((int)interpol::polynom_type::COUNT)
 {
   set_meta (x_min, x_max, points_count);
@@ -35,27 +36,45 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
   switch (type)
     {
     case polynom_type::c_spline_w_derivs:
-     m_additionals.insert (m_additionals.begin () + id, additional);
-      m_interpols.insert (m_interpols.begin () + id, std::unique_ptr<polynom> (create_polynom
+     m_additional_vectors[id] = additional;
+      m_interpols[id].reset (create_polynom
                                           <c_splines_w_derivs>
                                           (m_x_min, m_x_max, (unsigned int)m_points_count,
-                                           m_origin, additional)));
+                                           m_origin, additional));
       m_interpol_shown[id] = true;
       m_shown_count++;
       emit model_changed ();
       break;
     case polynom_type::newton_mult_nodes:
-//      m_interpols.insert (std::make_pair (type, create_polynom
-//                                          <newton_mult_nodes>
-//                                          (m_x_min, m_x_max, (unsigned int)m_points_count,
-//                                           m_origin, additional)));
-//      if (m_interpols[type] != nullptr)
-//        m_interpols_count++;
       std::abort ();
-      break;
     case polynom_type::COUNT:
       std::abort ();
     }
+  }
+}
+
+void interpol_plot_model::add_interpol (const interpol::polynom_type type,
+                                        std::function<double (const double)> d)
+{
+  int id = (int)type;
+  {
+    using namespace interpol;
+    switch (type)
+      {
+      case polynom_type::newton_mult_nodes:
+        m_additional_funcs[id] = d;
+        m_interpols[id].reset (create_polynom <newton_mult_nodes>(m_x_min, m_x_max,
+                                                                        (unsigned int)m_points_count,
+                                                                        m_origin, d));
+        m_interpol_shown[id] = true;
+        m_shown_count++;
+        emit model_changed ();
+        break;
+      case polynom_type::c_spline_w_derivs:
+        std::abort ();
+      case polynom_type::COUNT:
+        std::abort ();
+      }
   }
 }
 
@@ -84,8 +103,17 @@ void interpol_plot_model::reinterpolate ()
     {
       if (m_interpols[i].get ())
         {
-          m_interpols[i]->interpolate_function (m_x_min, m_x_max, m_points_count,
-                                                m_origin, m_additionals[i]);
+          switch (m_interpols[i]->get_add_type ())
+            {
+            case interpol::additional_array_size::const_size:
+              m_interpols[i]->interpolate_function (m_x_min, m_x_max, m_points_count,
+                                                m_origin, m_additional_vectors[i]);
+              break;
+            case interpol::additional_array_size::x_size:
+              m_interpols[i]->interpolate_function (m_x_min, m_x_max, m_points_count,
+                                                    m_origin, m_additional_funcs[i]);
+              break;
+            }
         }
     }
   emit model_changed ();
@@ -136,9 +164,10 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
           return m_interpol_shown[id];
         }
     }
+  return QVariant ();
 }
 
-double interpol_plot_model::bounds (const int graph_num, double &left, double &right) const
+void interpol_plot_model::bounds (const int graph_num, double &left, double &right) const
 {
   (void)graph_num;
   left = m_x_min;

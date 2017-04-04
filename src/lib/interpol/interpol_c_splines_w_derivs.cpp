@@ -1,5 +1,6 @@
 ﻿#include "interpol_c_splines_w_derivs.h"
 #include "interpol_newton_mult_nodes.h"
+#include "interpol_factory.h"
 #include "matrix/matrix_sq.h"
 #include "matrix/matrix_tri_diag.h"
 #include <algorithm>
@@ -71,7 +72,8 @@ void c_splines_w_derivs::compute_loc_polynoms (const std::vector<double> &xes, c
       x = {xes[i], xes[i + 1]};
       y = {ys[i], ys[i + 1]};
       d = {derivs[i], derivs[i + 1]};
-      m_loc_polynoms.push_back (std::make_unique<newton_mult_nodes> (x, y, d));
+      m_loc_polynoms.push_back (std::unique_ptr<newton_mult_nodes>
+                                (create_polynom<newton_mult_nodes> (x, y, d)));
     }
 }
 
@@ -172,12 +174,12 @@ void c_splines_w_derivs::interpolate_points (const std::vector<double> &xes_,
   compute_loc_polynoms (xes, ys, derivs);
 }
 
-unsigned int c_splines_w_derivs::get_add_size ()
+unsigned int c_splines_w_derivs::get_add_size () const
 {
   return 2;
 }
 
-additional_array_size c_splines_w_derivs::get_add_type ()
+additional_array_size c_splines_w_derivs::get_add_type () const
 {
   return additional_array_size::const_size;
 }

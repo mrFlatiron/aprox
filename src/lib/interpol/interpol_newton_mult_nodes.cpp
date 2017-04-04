@@ -10,26 +10,132 @@ newton_mult_nodes::newton_mult_nodes ()
 
 newton_mult_nodes::~newton_mult_nodes () {}
 
-newton_mult_nodes::newton_mult_nodes (const double *three_in_one,
-                                     const unsigned int size_of_one)
+//newton_mult_nodes::newton_mult_nodes (const double *three_in_one,
+//                                     const unsigned int size_of_one)
+//{
+//  m_points_count = size_of_one;
+//  const double *it = three_in_one;
+//  for (unsigned int i = 0; i < m_points_count; i++, it++)
+//    {
+//      m_xes.push_back (it[0]);
+//      m_div_difs.push_back (it[m_points_count]);
+//      m_div_difs.push_back (it[2 * m_points_count]);
+//    }
+//  find_bounds ();
+//  compute_div_difs ();
+//}
+
+newton_mult_nodes::newton_mult_nodes (const std::vector<double> &xes, const std::vector<double> &ys,
+                                      const std::vector<double> &derivs) :
+  m_xes (),
+  m_div_difs ()
 {
-  m_points_count = size_of_one;
-  const double *it = three_in_one;
-  for (unsigned int i = 0; i < m_points_count; i++, it++)
+  interpolate_points (xes, ys, derivs);
+}
+
+newton_mult_nodes::newton_mult_nodes (const double a_, const double b_,
+                                     const unsigned int points_count,
+                                     std::function<double (const double)> f,
+                                     std::function<double (const double)> d) :
+  m_xes (),
+  m_div_difs ()
+{
+  interpolate_function (a_, b_, points_count, f, d);
+}
+
+void newton_mult_nodes::interpolate_function (const double a_, const double b_,
+                                              const unsigned int points_count,
+                                              std::function<double (const double)> f,
+                                              const std::vector<double> &additional)
+{
+
+  m_div_difs.clear ();
+  m_xes.clear ();
+
+  double a = a_;
+  double b = b_;
+  if (a_ > b_)
     {
-      m_xes.push_back (it[0]);
-      m_div_difs.push_back (it[m_points_count]);
-      m_div_difs.push_back (it[2 * m_points_count]);
+      a = b_;
+      b = a_;
     }
+  m_points_count = points_count;
+  m_x_min = a;
+  m_x_max = b;
+
+
+
+  if (points_count < 2)
+    {
+      fprintf (stderr, "wrong size in constructor\n");
+      return;
+    }
+
+  double hx = (b - a) / (points_count - 1);
+  for (unsigned int i = 0; i < points_count; i++)
+    {
+      m_xes.push_back (a + i * hx);
+      m_div_difs.push_back (f (m_xes[i]));
+      m_div_difs.push_back (additional[i]);
+    }
+  find_bounds ();
+  compute_div_difs ();
+
+}
+
+void newton_mult_nodes::interpolate_function (const double a_, const double b_,
+                                              const unsigned int points_count,
+                                              std::function<double (const double)> f,
+                                              std::function<double (const double)> d)
+{
+  m_div_difs.clear ();
+  m_xes.clear ();
+
+  double a = a_;
+  double b = b_;
+  if (a_ > b_)
+    {
+      a = b_;
+      b = a_;
+    }
+  m_points_count = points_count;
+  m_x_min = a;
+  m_x_max = b;
+
+
+
+  if (points_count < 2)
+    {
+      fprintf (stderr, "wrong size in constructor\n");
+      return;
+    }
+
+  double hx = (b - a) / (points_count - 1);
+  for (unsigned int i = 0; i < points_count; i++)
+    {
+      m_xes.push_back (a + i * hx);
+      m_div_difs.push_back (f (m_xes[i]));
+      m_div_difs.push_back (d (m_xes[i]));
+    }
+
   find_bounds ();
   compute_div_difs ();
 }
 
-newton_mult_nodes::newton_mult_nodes (const std::vector<double> &xes, const std::vector<double> &ys,
-                                      const std::vector<double> &derivs)
+void newton_mult_nodes::interpolate_points (const std::vector<double> &xes,
+                                            const std::vector<double> &ys,
+                                            const std::vector<double> &derivs)
 {
+  m_xes.clear ();
+  m_div_difs.clear ();
   m_xes = xes;
   m_points_count = m_xes.size ();
+
+  if (m_points_count < 2)
+    {
+      fprintf (stderr, "wrong size in constructor\n");
+      return;
+    }
   for (unsigned int i = 0; i < m_points_count; i++)
     {
       m_div_difs.push_back (ys[i]);
@@ -44,7 +150,7 @@ double newton_mult_nodes::operator () (const double x) const
   return horner_sum (x);
 }
 
-additional_array_size newton_mult_nodes::get_add_type ()
+additional_array_size newton_mult_nodes::get_add_type () const
 {
   return additional_array_size::x_size;
 }

@@ -4,12 +4,11 @@
 #include <vector>
 #include <memory>
 #include <functional>
-
+#include "interpol_newton_mult_nodes.h"
 
 
 namespace interpol
 {
-  class newton_mult_nodes;
   class c_splines_w_derivs : public polynom
   {
   private:
@@ -33,8 +32,8 @@ namespace interpol
     virtual void interpolate_points (const std::vector<double> &xes_,
                                      const std::vector<double> &ys,
                                      const std::vector<double> &derivs_) override;
-    static unsigned int get_add_size ();
-    static additional_array_size get_add_type ();
+    virtual unsigned int get_add_size () const override;
+    virtual additional_array_size get_add_type () const override;
   private:
     void compute_derivs (const std::vector<double> &xes, const std::vector<double> &ys,
                          std::vector<double> &derivs,

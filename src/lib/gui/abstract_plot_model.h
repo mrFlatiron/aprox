@@ -13,7 +13,7 @@ public:
   virtual int graphs_count () const = 0;
   virtual QPointF point_by_x (const int graph_num, const double x) const = 0;
   virtual QVariant paint_config (const int graph_num, const graph_role role) const = 0;
-  virtual double bounds (const int graph_num, double &left, double &right) const = 0;
+  virtual void bounds (const int graph_num, double &left, double &right) const = 0;
 signals:
   void model_changed ();
 };
