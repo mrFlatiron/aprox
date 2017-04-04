@@ -41,9 +41,7 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
                                           <c_splines_w_derivs>
                                           (m_x_min, m_x_max, (unsigned int)m_points_count,
                                            m_origin, additional));
-      m_interpol_shown[id] = true;
-      m_shown_count++;
-      emit model_changed ();
+
       break;
     case polynom_type::newton_mult_nodes:
       std::abort ();
@@ -51,6 +49,9 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
       std::abort ();
     }
   }
+  m_interpol_shown[id] = true;
+  m_shown_count++;
+  emit model_changed ();
 }
 
 void interpol_plot_model::add_interpol (const interpol::polynom_type type,
@@ -66,9 +67,7 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
         m_interpols[id].reset (create_polynom <newton_mult_nodes>(m_x_min, m_x_max,
                                                                         (unsigned int)m_points_count,
                                                                         m_origin, d));
-        m_interpol_shown[id] = true;
-        m_shown_count++;
-        emit model_changed ();
+
         break;
       case polynom_type::c_spline_w_derivs:
         std::abort ();
@@ -76,6 +75,9 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
         std::abort ();
       }
   }
+  m_interpol_shown[id] = true;
+  m_shown_count++;
+  emit model_changed ();
 }
 
 void interpol_plot_model::set_origin_func (const std::function<double (const double)> &origin)

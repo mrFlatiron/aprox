@@ -1,7 +1,6 @@
 #ifndef ABSTRACT_PLOT_DRAWER_H
 #define ABSTRACT_PLOT_DRAWER_H
 #include <QGraphicsScene>
-//#include <QGraphicsView>
 
 class abstract_plot_model;
 class QGraphicsView;
