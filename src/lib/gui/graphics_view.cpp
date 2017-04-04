@@ -4,7 +4,7 @@
 
 graphics_view::graphics_view (QWidget *parent) : QGraphicsView (parent)
 {
-//  this->setFrameRect (QRect(-100, 100, 100, 100));
+//this->setFrameRect (QRect(-100, 100, 100, 100));
   this->setTransform (QTransform (1, 0, 0,
                                   0, -1, 0,
                                   0, 0, 1));
@@ -19,3 +19,11 @@ QSize graphics_view::sizeHint() const
 {
   return QSize (1000, 1000);
 }
+
+void graphics_view::set_scale (const int scale)
+{
+  setTransform (QTransform (scale, 0, 0,
+                0, -scale, 0,
+                0, 0, 1));
+}
+

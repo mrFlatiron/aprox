@@ -80,7 +80,7 @@ void main_window::open_greetings_window ()
       path = g_window->get_path ();
       break;
     case data_source::function:
-      m_plot_model = new interpol_plot_model (1, 31.415926, 2);
+      m_plot_model = new interpol_plot_model (0, 6.2831, 2);
       m_plot_model->set_origin_func (std::function<double(const double)> (func_to_aprox));
       m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
       {1, 1});
