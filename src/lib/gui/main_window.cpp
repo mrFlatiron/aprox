@@ -91,6 +91,8 @@ void main_window::open_greetings_window ()
     {
     case data_source::file:
       path = g_window->get_path ();
+      fprintf (stderr, "Not Implemented\n");
+      std::abort ();
       break;
     case data_source::function:
       m_plot_model = new interpol_plot_model (0, 10, 2);

@@ -8,14 +8,17 @@
  * * Create a class derived from interpol::polynom
  * * Add its name to enum class interpol::polynom_type in interpol_factory.h
  * * Implement pure virtual methods
+ * * Implement interpolate_points ()
+ * * Implement constructor with the same prototype as interpolate_points ()
+ * * Implement constructor () (leave empty for example)
  *
  * * If get_add_type = x_size
  * * * Implement the second interpolate_function (2 functions in arguments)
  * * If = const_size
- * * * Implement the first interpolate_function (1 function and 1 vector in args)
  * * * Implement get_add_size, which returns expected size of additional
+ * * * Implement the first interpolate_function (1 function and 1 vector in args)
  *
- * * Implement constructors with the same prototype as interpolate_function (...) you use
+ * * Implement constructor with the same prototype as interpolate_function (...) you use
  *
  * * Adjust interpol_plot_model:
  * * * Add some 'case your_interpol:' to switches.
