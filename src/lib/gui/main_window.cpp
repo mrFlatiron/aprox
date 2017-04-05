@@ -37,6 +37,7 @@ void main_window::set_layouts ()
   QVBoxLayout *vlo_1 = new QVBoxLayout;
   {
     vlo_1->addWidget (m_plot_drawer->get_view ());
+
     int spinbox_size;
     int label_size;
     QHBoxLayout *hlo_1 = new QHBoxLayout;
@@ -46,11 +47,13 @@ void main_window::set_layouts ()
       m_points_count_edit->setMinimum (2);
       m_points_count_edit->setMaximum (10000000);
       spinbox_size = m_points_count_edit->width ();
+      m_points_count_edit->setFixedWidth (spinbox_size);
       m_points_count_edit->setValue (pc);
       connect (m_points_count_edit, SIGNAL (valueChanged (int)),
                this, SLOT (on_pc_slider_moved (int)));
-      QLabel *l = new QLabel ("interpol points:", this);
+      QLabel *l = new QLabel ("interpol points", this);
       label_size = l->width ();
+      l->setFixedWidth (label_size);
       hlo_1->addWidget (l);
       hlo_1->addWidget (m_points_count_edit);
       hlo_1->addWidget (new stretch (this), 1);
@@ -63,12 +66,12 @@ void main_window::set_layouts ()
       m_scale_edit = new QSpinBox (this);
       m_scale_edit->setMinimum (1);
       m_scale_edit->setMaximum (1000);
-      m_scale_edit->setFixedWidth (spinbox_size -4);
+      m_scale_edit->setFixedWidth (spinbox_size);
       m_scale_edit->setValue (scale);
       connect (m_scale_edit, SIGNAL (valueChanged (int)),
                this, SLOT (on_scale_slider_moved (int)));
-      QLabel *l = new QLabel ("scale:", this);
-      l->setFixedWidth (label_size - 5);
+      QLabel *l = new QLabel ("scale", this);
+      l->setFixedWidth (label_size);
       hlo_2->addWidget (l);
       hlo_2->addWidget (m_scale_edit);
       hlo_2->addWidget (new stretch (this), 1);

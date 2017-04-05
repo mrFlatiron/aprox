@@ -61,7 +61,7 @@ int abstract_plot_drawer::scale () const
 void abstract_plot_drawer::set_centered ()
 {
   m_view->centerOn (0, 0);
-  m_view->ensureVisible (sceneRect ());
+  m_view->ensureVisible (QRect (-10, 10, 20, 20));
 }
 
 void abstract_plot_drawer::set_default ()
