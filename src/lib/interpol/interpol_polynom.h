@@ -6,7 +6,7 @@
 /*******************
  * To implement your interpolation:
  * * Create a class derived from interpol::polynom
- * * Add its name to enum class interpol::polynom_type in interpol_factory.h
+ * * Add its name to enum class interpol::polynom_type in interpol_tools.h (right before COUNT)
  * * Implement pure virtual methods
  * * Implement interpolate_points ()
  * * Implement constructor with the same prototype as interpolate_points ()
@@ -21,8 +21,7 @@
  * * Implement constructor with the same prototype as interpolate_function (...) you use
  *
  * * Adjust interpol_plot_model:
- * * * Add some 'case your_interpol:' to switches.
- * * * Dont use "default:" in interpol_plot_model switches
+ * * * Add 'case your_interpol:' to switches where needed.
  *
  * To create an instance of your class use a T *create_polynom<T> method from interpol_factory
 *******************/

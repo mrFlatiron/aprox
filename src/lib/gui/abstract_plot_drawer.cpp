@@ -74,7 +74,7 @@ void abstract_plot_drawer::set_default ()
   m_view->set_scale (m_scale);
   m_smooth = 5;
   calculate_pivot_points ();
-  setBackgroundBrush (QBrush(QColor (Qt::lightGray)));
+  setBackgroundBrush (QBrush(QColor (230, 230, 230)));
 }
 
 QPen abstract_plot_drawer::set_pen (const int graph_num) const

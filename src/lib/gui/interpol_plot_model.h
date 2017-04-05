@@ -13,6 +13,7 @@ namespace interpol
 }
 class interpol_plot_model : public abstract_plot_model
 {
+  Q_OBJECT
 private:
   const double EPS = 1e-15;
   double m_x_min;
@@ -24,6 +25,7 @@ private:
   std::vector<std::vector<double>> m_additional_vectors;
   std::vector<std::function<double(const double)>> m_additional_funcs;
   std::vector<bool> m_interpol_shown;
+  bool m_origin_shown = true;
 public:
   interpol_plot_model () = delete;
   interpol_plot_model (const double x_min, const double x_max,
@@ -46,6 +48,9 @@ public:
   virtual void bounds(const int graph_num, double &left, double &right) const override;
 
   QColor get_color(const interpol::polynom_type type) const;
+
+public slots:
+  void change_visible_graphs (int id, bool shown);
 };
 
 #endif // INTERPOL_PLOT_MODEL_H

@@ -10,12 +10,7 @@
 
 namespace interpol
 {
-  enum class polynom_type
-  {
-    newton_mult_nodes,
-    c_spline_w_derivs,
-    COUNT
-  };
+
 
   template <class T>
   T *create_polynom (FILE *fin, const unsigned int x_size)

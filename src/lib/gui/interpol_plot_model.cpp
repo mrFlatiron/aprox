@@ -153,7 +153,7 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
         case graph_role::width:
           return 3;
         case graph_role::shown:
-          return true;
+          return m_origin_shown;
         }
     default:
       switch (role)
@@ -189,6 +189,21 @@ QColor interpol_plot_model::get_color (const interpol::polynom_type type) const
       return Qt::black;
     }
   return Qt::black;
+}
+
+void interpol_plot_model::change_visible_graphs (int id, bool shown)
+{
+  switch (id)
+    {
+    case 0:
+      m_origin_shown = shown;
+      break;
+    default:
+      m_interpol_shown[id - 1] = shown;
+      break;
+    }
+
+  emit model_changed ();
 }
 
 //void interpol_plot_model::on_points_count_changed (int points_count)
