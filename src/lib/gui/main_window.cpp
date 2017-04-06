@@ -22,9 +22,10 @@ main_window::main_window (QWidget *parent) : QDialog (parent)
   set_layouts ();
 }
 
-main_window::~main_window()
+main_window::~main_window ()
 {
-
+  if (m_plot_model)
+    delete m_plot_model;
 }
 
 QSize main_window::sizeHint() const
@@ -79,7 +80,7 @@ void main_window::set_layouts ()
     }
     vlo_1->addLayout (hlo_2);
 
-    QPushButton *center = new QPushButton ("to center");
+    QPushButton *center = new QPushButton ("to center", this);
     connect (center, SIGNAL (clicked ()), m_plot_drawer, SLOT (set_centered ()));
     vlo_1->addWidget (center, 0, Qt::AlignLeft);
     std::vector<QString> labels;
@@ -101,7 +102,7 @@ void main_window::open_greetings_window ()
 {
   greet_window g_window (this);
   if (QDialog::Accepted != g_window.exec ())
-    return;
+    std::abort ();
   data_source type = g_window.get_source_type ();
   QString path;
   switch (type)
@@ -120,12 +121,12 @@ void main_window::open_greetings_window ()
           min = max;
           max = buf;
         }
+      m_plot_drawer = new abstract_plot_drawer (this);
       m_plot_model = new interpol_plot_model (min, max, 2);
       m_plot_model->set_origin_func (std::function<double(const double)> (func_to_aprox));
       m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
       {deriv (min), deriv (max)});
       m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes, deriv);
-      m_plot_drawer = new abstract_plot_drawer (this);
       m_plot_drawer->set_model (m_plot_model);
       break;
     }

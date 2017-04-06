@@ -17,7 +17,7 @@ private:
   QLineEdit *m_path_edit;
   QLineEdit *m_min_edit;
   QLineEdit *m_max_edit;
-  data_source m_source_type;
+  data_source m_source_type = data_source::function;
   double m_x_min;
   double m_x_max;
 public:
