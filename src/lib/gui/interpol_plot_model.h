@@ -55,7 +55,7 @@ public slots:
   void change_visible_graphs (int id, bool shown);
 
 private:
-  void calc_id_for_diff();
+  void calc_id_for_diff ();
 };
 
 #endif // INTERPOL_PLOT_MODEL_H

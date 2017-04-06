@@ -29,7 +29,7 @@ main_window::~main_window()
 
 QSize main_window::sizeHint() const
 {
-  return QSize (600, 600);
+  return QSize (1024, 780);
 }
 
 void main_window::set_layouts ()
@@ -37,9 +37,10 @@ void main_window::set_layouts ()
   QVBoxLayout *vlo_1 = new QVBoxLayout;
   {
     vlo_1->addWidget (m_plot_drawer->get_view ());
-
+//    m_plot_drawer->show ();
     int spinbox_size;
     int label_size;
+
     QHBoxLayout *hlo_1 = new QHBoxLayout;
     {
       int pc = m_plot_model->get_points_count ();
@@ -93,28 +94,37 @@ void main_window::set_layouts ()
     vlo_1->addLayout (visible_graphs_box->as_layout ());
   }
   setLayout (vlo_1);
-  m_plot_drawer->show ();
+
 }
 
 void main_window::open_greetings_window ()
 {
-  greet_window *g_window = new greet_window (this);
-  g_window->exec ();
-  data_source type = g_window->get_source_type ();
+  greet_window g_window (this);
+  if (QDialog::Accepted != g_window.exec ())
+    return;
+  data_source type = g_window.get_source_type ();
   QString path;
   switch (type)
     {
     case data_source::file:
-      path = g_window->get_path ();
+      path = g_window.get_path ();
       fprintf (stderr, "Not Implemented\n");
       std::abort ();
       break;
     case data_source::function:
-      m_plot_model = new interpol_plot_model (-5, 10, 2);
+      double min = g_window.get_min ();
+      double max = g_window.get_max ();
+      if (min > max)
+        {
+          double buf = min;
+          min = max;
+          max = buf;
+        }
+      m_plot_model = new interpol_plot_model (min, max, 2);
       m_plot_model->set_origin_func (std::function<double(const double)> (func_to_aprox));
       m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
-      {cubic_d (-5), cubic_d (10)});
-      m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes, cubic_d);
+      {deriv (min), deriv (max)});
+      m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes, deriv);
       m_plot_drawer = new abstract_plot_drawer (this);
       m_plot_drawer->set_model (m_plot_model);
       break;

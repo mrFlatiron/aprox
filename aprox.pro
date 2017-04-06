@@ -21,7 +21,9 @@ SOURCES += \
     src/lib/containers/any_t.cpp \
     src/lib/gui/graphics_view.cpp \
     src/lib/gui/interpol_plot_model.cpp \
-    src/lib/gui/stretch.cpp
+    src/lib/gui/stretch.cpp \
+    src/lib/gui/gui_checkbox_group.cpp \
+    src/lib/gui/gui_checkbox_w_id.cpp
 
 HEADERS += \
     src/lib/gui/main_window.h \
@@ -42,7 +44,9 @@ HEADERS += \
     src/lib/containers/any_t.h \
     src/lib/gui/graphics_view.h \
     src/lib/gui/interpol_plot_model.h \
-    src/lib/gui/stretch.h
+    src/lib/gui/stretch.h \
+    src/lib/gui/gui_checkbox_group.h \
+    src/lib/gui/gui_checkbox_w_id.h
 
 INCLUDEPATH += src/lib
 INCLUDEPATH += src

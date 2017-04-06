@@ -17,6 +17,9 @@ private:
  int m_pivot_count;
  double m_x_min;
  double m_x_max;
+ double m_y_max;
+ double m_y_min;
+ const double m_axis_max = 10;
  abstract_plot_model *m_plot_model = nullptr;
 
 public:
@@ -32,6 +35,7 @@ public slots:
   void set_centered ();
 private:
   void calculate_pivot_points ();
+  void calculate_axis_length (double &l_axis, double &r_axis, double &u_axis, double &b_axis);
   void set_default ();
   QPen set_pen (const int graph_num) const;
   void draw_grid ();

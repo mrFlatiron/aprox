@@ -221,13 +221,21 @@ void interpol_plot_model::change_visible_graphs (int id, bool shown)
 
 void interpol_plot_model::calc_id_for_diff ()
 {
+  m_id_for_diff = -1;
+  int count = 0;
   for (int type = 0; type < (int)m_interpol_shown.size (); type++)
+    {
     if (m_interpol_shown[type])
       {
         m_id_for_diff = type;
+        count++;
+      }
+    if (count >= 2)
+      {
+        m_id_for_diff = -1;
         return;
       }
-  m_id_for_diff = -1;
+    }
 }
 
 //void interpol_plot_model::on_points_count_changed (int points_count)
