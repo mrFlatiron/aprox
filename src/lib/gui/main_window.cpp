@@ -38,7 +38,6 @@ void main_window::set_layouts ()
   QVBoxLayout *vlo_1 = new QVBoxLayout;
   {
     vlo_1->addWidget (m_plot_drawer->get_view ());
-//    m_plot_drawer->show ();
     int spinbox_size;
     int label_size;
 
@@ -62,24 +61,6 @@ void main_window::set_layouts ()
     }
     vlo_1->addLayout (hlo_1);
 
-    QHBoxLayout *hlo_2 = new QHBoxLayout;
-    {
-      int scale = m_plot_drawer->scale ();
-      m_scale_edit = new QSpinBox (this);
-      m_scale_edit->setMinimum (1);
-      m_scale_edit->setMaximum (1000);
-      m_scale_edit->setFixedWidth (spinbox_size);
-      m_scale_edit->setValue (scale);
-      connect (m_scale_edit, SIGNAL (valueChanged (int)),
-               this, SLOT (on_scale_slider_moved (int)));
-      QLabel *l = new QLabel ("scale", this);
-      l->setFixedWidth (label_size);
-      hlo_2->addWidget (l);
-      hlo_2->addWidget (m_scale_edit);
-      hlo_2->addWidget (new stretch (this), 1);
-    }
-    vlo_1->addLayout (hlo_2);
-
     QPushButton *center = new QPushButton ("to center", this);
     connect (center, SIGNAL (clicked ()), m_plot_drawer, SLOT (set_centered ()));
     vlo_1->addWidget (center, 0, Qt::AlignLeft);
@@ -95,7 +76,6 @@ void main_window::set_layouts ()
     vlo_1->addLayout (visible_graphs_box->as_layout ());
   }
   setLayout (vlo_1);
-
 }
 
 void main_window::open_greetings_window ()
@@ -137,9 +117,4 @@ void main_window::open_greetings_window ()
 void main_window::on_pc_slider_moved (int val)
 {
   m_plot_model->set_points_count (val);
-}
-
-void main_window::on_scale_slider_moved (int val)
-{
-  m_plot_drawer->set_scale (val);
 }

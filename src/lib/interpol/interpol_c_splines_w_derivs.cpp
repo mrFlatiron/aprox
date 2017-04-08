@@ -174,6 +174,11 @@ void c_splines_w_derivs::interpolate_points (const std::vector<double> &xes_,
   compute_loc_polynoms (xes, ys, derivs);
 }
 
+void c_splines_w_derivs::interpolate_function (const double a_, const double b_, const unsigned int points_count, std::function<double (const double)> f, std::function<double (const double)> d)
+{
+   polynom::interpolate_function (a_, b_, points_count, f, d);
+}
+
 unsigned int c_splines_w_derivs::get_add_size () const
 {
   return 2;

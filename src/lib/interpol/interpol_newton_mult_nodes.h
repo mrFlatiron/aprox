@@ -7,9 +7,11 @@
 namespace interpol
 {
   const double EPS = 1e-16;
+  const double fpe_max = 1e35;
   class newton_mult_nodes : public polynom
   {
   private:
+
     unsigned int m_points_count;
     std::vector<double> m_xes;
     std::vector<double> m_div_difs; // m_x_size * 2 size

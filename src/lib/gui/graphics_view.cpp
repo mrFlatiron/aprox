@@ -20,10 +20,19 @@ QSize graphics_view::sizeHint() const
   return QSize (1024, 780);
 }
 
-void graphics_view::set_scale (const int scale)
+void graphics_view::set_scale_x (const int scale)
 {
-  setTransform (QTransform (scale, 0, 0,
-                0, -scale, 0,
-                0, 0, 1));
+    QTransform old = transform();
+    setTransform (abs (scale), old.m12(), old.m13(),
+                  old.m21(), old.m22 (), old.m23 (),
+                  old.m31 (), old.m32 (), old.m33 ());
+}
+
+void graphics_view::set_scale_y (const int scale)
+{
+    QTransform old = transform();
+    setTransform (old.m11(), old.m12(), old.m13(),
+                  old.m21(), -abs (scale), old.m23 (),
+                  old.m31 (), old.m32 (), old.m33 ());
 }
 

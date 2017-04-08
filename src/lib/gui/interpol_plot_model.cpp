@@ -123,12 +123,12 @@ void interpol_plot_model::reinterpolate ()
 
 int interpol_plot_model::graphs_count () const
 {
-  return m_interpol_shown.size () + 2; //origin and diff are always shown
+  return m_interpol_shown.size () + 1;
 }
 
 QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) const
 {
-  int id = graph_num - 2;
+  int id = graph_num - 1;
   switch (graph_num)
     {
     case 0: //origin
@@ -143,7 +143,7 @@ QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) co
 
 QVariant interpol_plot_model::paint_config (const int graph_num, const graph_role role) const
 {
-  int id = graph_num - 2;
+  int id = graph_num - 1;
   interpol::polynom_type type = (interpol::polynom_type)id;
   switch (graph_num)
     {
@@ -157,17 +157,6 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
         case graph_role::shown:
           return m_origin_shown;
         }
-    case 1:
-      switch (role)
-        {
-        case graph_role::color:
-          return QColor (150, 150, 100);
-        case graph_role::width:
-          return 3;
-        case graph_role::shown:
-          return m_diff_shown && (m_id_for_diff >= 0);
-        }
-
     default:
       switch (role)
         {
@@ -215,28 +204,9 @@ void interpol_plot_model::change_visible_graphs (int id, bool shown)
       m_interpol_shown[id - 1] = shown;
       break;
     }
-  calc_id_for_diff ();
   emit model_changed ();
 }
 
-void interpol_plot_model::calc_id_for_diff ()
-{
-  m_id_for_diff = -1;
-  int count = 0;
-  for (int type = 0; type < (int)m_interpol_shown.size (); type++)
-    {
-    if (m_interpol_shown[type])
-      {
-        m_id_for_diff = type;
-        count++;
-      }
-    if (count >= 2)
-      {
-        m_id_for_diff = -1;
-        return;
-      }
-    }
-}
 
 //void interpol_plot_model::on_points_count_changed (int points_count)
 //{

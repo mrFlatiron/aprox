@@ -32,6 +32,10 @@ namespace interpol
     virtual void interpolate_points (const std::vector<double> &xes_,
                                      const std::vector<double> &ys,
                                      const std::vector<double> &derivs_) override;
+    virtual void interpolate_function (const double a_, const double b_,
+                                      const unsigned int points_count,
+                                      std::function<double (const double)> f,
+                                      std::function<double (const double)> d);
     virtual unsigned int get_add_size () const override;
     virtual additional_array_size get_add_type () const override;
   private:

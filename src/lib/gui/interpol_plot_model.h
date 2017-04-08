@@ -26,8 +26,6 @@ private:
   std::vector<std::function<double(const double)>> m_additional_funcs;
   std::vector<bool> m_interpol_shown;
   bool m_origin_shown = true;
-  bool m_diff_shown = true;
-  int m_id_for_diff = -1;
 public:
   interpol_plot_model () = delete;
   interpol_plot_model (const double x_min, const double x_max,

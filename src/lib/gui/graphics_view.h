@@ -11,7 +11,8 @@ public:
   explicit graphics_view (QWidget *parent = 0);
   virtual ~graphics_view ();
   virtual QSize sizeHint () const override;
-  void set_scale (const int scale);
+  void set_scale_x (const int scale);
+  void set_scale_y (const int scale);
 signals:
 
 public slots:

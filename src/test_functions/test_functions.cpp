@@ -3,16 +3,18 @@
 
 double func_to_aprox (const double x)
 {
-  return sin (x) + cos (x);
+  return x;
 }
 
 double deriv (const double x)
 {
-  return cos (x) - sin (x);
+    (void)x;
+  return 1;
 }
 
 double id (const double x)
 {
+  (void)x;
   return 1;
 }
 

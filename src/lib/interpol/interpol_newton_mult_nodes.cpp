@@ -218,6 +218,11 @@ double newton_mult_nodes::horner_sum (const double x) const
   for (auto pos = 2 * m_points_count - 1; pos >= 1; pos--)
     {
       ret = (ret + m_div_difs[pos]) * (x - m_xes[(pos - 1)/ 2]);
+      if (fabs (ret) > fpe_max)
+      {
+          fprintf (stderr, "FPE WARNING\n");
+          return fpe_max;
+      }
     }
 
   ret += m_div_difs[0];
