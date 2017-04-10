@@ -116,8 +116,7 @@ void graph_painter::calculate_window_rect ()
   double height = m_y_max - m_y_min + len / 2;
   int d_width = device ()->width ();
   int d_height = device ()->height ();
-  setWindow (left, top, width, -height);
-
+  setWindow ((int)ceil(left), (int)ceil(top), (int)ceil(width), -(int)ceil(height));
 //  setTransform (QTransform (10, 0, 0,
 //                            0, -10, 0,
 //                            0, 0, 1));
