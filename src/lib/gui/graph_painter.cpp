@@ -11,6 +11,23 @@ graph_painter::graph_painter (QPaintDevice *device) : QPainter (device)
 
 }
 
+void graph_painter::draw_axis ()
+{
+  int d_width = device ()->width ();
+  int d_height = device ()->height ();
+
+  int m_axis_shift = 15;
+
+  QPoint o (m_axis_shift, d_height - m_axis_shift);
+  QPoint x (d_width - m_axis_shift, d_height - m_axis_shift);
+  QPoint y (m_axis_shift, m_axis_shift);
+
+  drawLine (o, x);
+  drawLine (o, y);
+  drawText (50, d_height, "1");
+//  setViewport (10, 10, d_width - 10, d_height - 10);
+}
+
 void graph_painter::draw_graph (const int graph_num)
 {
   if (!m_plot_model->paint_config (graph_num, graph_role::shown).toBool ())
@@ -36,14 +53,21 @@ void graph_painter::draw_graph (const int graph_num)
 
       second = m_plot_model->point_by_x (graph_num, x);
 
-      drawLine (first, second);
+      draw_line (first, second);
       first = second;
     }
 }
 
 void graph_painter::redraw_all ()
 {
-  calculate_window_rect ();
+  draw_axis ();
+  double x_scale, y_scale;
+  QRect rect = calculate_window_rect (x_scale, y_scale);
+//  setViewport (m_axis_shift, m_axis_shift, device ()->width () - m_axis_shift, device ()->height () - m_axis_shift);
+  setWindow (rect);
+  m_x_scale = x_scale;
+  m_y_scale = y_scale;
+
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
     {
@@ -68,7 +92,7 @@ void graph_painter::calculate_pivot_count ()
   m_pivot_count = device()->width () / 100 * m_smooth;
 }
 
-void graph_painter::calculate_window_rect ()
+QRect graph_painter::calculate_window_rect (double &x_scale, double &y_scale)
 {
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
@@ -112,11 +136,38 @@ void graph_painter::calculate_window_rect ()
   double width = len + len / 5;
 
   len = m_y_max - m_y_min;
-  double top = m_y_max + len / 4;
-  double height = m_y_max - m_y_min + len / 2;
+  double top = m_y_max + len / 10;
+  double height = m_y_max - m_y_min + len / 5;
   int d_width = device ()->width ();
   int d_height = device ()->height ();
-  setWindow ((int)ceil(left), (int)ceil(top), (int)ceil(width), -(int)ceil(height));
+  int ileft = (int)ceil(left);
+  int itop = (int)ceil(top);
+  int iwidth = (int)ceil(width);
+  int iheight = (int)ceil(height);
+
+  QRect to_ret = QRect (ileft, itop, iwidth, -iheight);
+
+  if (iheight == 1)
+    {
+      if (m_y_max - m_y_min > 1e-35)
+        y_scale = iheight / (m_y_max - m_y_min);
+      else
+        y_scale = iheight / 1e-30;
+    }
+  else
+    y_scale = 1;
+
+  if (iwidth == 1)
+    {
+      if (m_x_max - m_x_min > 1e-35)
+        x_scale = iwidth / (m_x_max - m_x_min);
+      else
+        x_scale = iwidth / 1e-30;
+    }
+  else
+    x_scale = 1;
+
+  return to_ret;
 //  setTransform (QTransform (10, 0, 0,
 //                            0, -10, 0,
 //                            0, 0, 1));
@@ -130,7 +181,7 @@ void graph_painter::calculate_window_rect ()
 //  scale (1, -1);
 //  translate (0, fabs (m_y_min));
 //  translate (fabs (m_x_min) * d_width / width, fabs (m_y_max) * d_height / height);
-  setPen (set_pen (0));
+//  setPen (set_pen (0));
 //  drawText (m_x_min, m_y_min, "1");
 //  drawText (0, 0, "2");
 //  drawText (m_x_max, m_y_max, "3");
@@ -181,4 +232,14 @@ QPen graph_painter::set_pen (const int graph_num) const
   pen.setJoinStyle (Qt::RoundJoin);
   pen.setCosmetic (true);
   return pen;
+}
+
+QPointF graph_painter::to_scale (QPointF point)
+{
+  return QPointF (point.x () * m_x_scale, point.y () * m_y_scale);
+}
+
+void graph_painter::draw_line (QPointF point_a, QPointF point_b)
+{
+  drawLine (to_scale (point_a), to_scale (point_b));
 }
