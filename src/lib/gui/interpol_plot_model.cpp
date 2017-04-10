@@ -133,8 +133,6 @@ QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) co
     {
     case 0: //origin
       return QPointF (x, m_origin (x));
-    case 1: //diff
-      return QPointF (x, fabs (m_origin (x) - m_interpols[m_id_for_diff].get ()->eval (x)));
     default:
       interpol::polynom *p = m_interpols[id].get ();
       return QPointF (x, p->eval (x));

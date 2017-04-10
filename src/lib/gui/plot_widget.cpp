@@ -1,0 +1,29 @@
+#include "plot_widget.h"
+#include "graph_painter.h"
+
+plot_widget::plot_widget (graph_painter *painter, QWidget *parent)
+  : QWidget (parent)
+{
+  m_painter = painter;
+}
+
+QSize plot_widget::sizeHint () const
+{
+  return QSize (1024, 780);
+}
+
+void plot_widget::paintEvent (QPaintEvent *event)
+{
+  (void)event;
+  m_painter->begin (this);
+  m_painter->redraw_all ();
+//  m_painter->drawRect (, 0, 300, 300);
+//  m_painter->drawRect (rect ());
+//  QRect r = rect ();
+  m_painter->end ();
+}
+
+void plot_widget::set_painter (graph_painter *painter)
+{
+  m_painter = painter;
+}

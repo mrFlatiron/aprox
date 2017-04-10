@@ -1,25 +1,26 @@
 #include "abstract_plot_drawer.h"
 #include "abstract_plot_model.h"
-#include "graphics_view.h"
+#include "graph_painter.h"
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsLineItem>
 
-abstract_plot_drawer::abstract_plot_drawer (QObject *parent) : QGraphicsScene (parent)
+abstract_plot_drawer::abstract_plot_drawer (QWidget *parent) : QWidget (parent)
 {
   set_default ();
 }
 
 abstract_plot_drawer::~abstract_plot_drawer ()
 {
- if (m_view)
-   delete m_view;
+ if (m_painter)
+   {
+     delete m_painter;
+   }
 }
 
 void abstract_plot_drawer::set_model (abstract_plot_model *model)
 {
   m_plot_model = model;
   connect (m_plot_model, SIGNAL (model_changed ()), this, SLOT (on_model_changed ()));
-  m_view->setScene (this);
 //  double l = -200;
 //  double t = 200;
 //  double r = 200;
@@ -28,55 +29,43 @@ void abstract_plot_drawer::set_model (abstract_plot_model *model)
 //  setSceneRect (f);
 
   redraw_all ();
-//      addLine (l, t, r, b);
+//      m_painter->drawLine (l, t, r, b);
 //       m_view->centerOn (0, 0);
 //      m_view->ensureVisible (f);
 //  f = sceneRect ();
 }
 
-QGraphicsView *abstract_plot_drawer::get_view ()
-{
-  return m_view;
-}
 
-void abstract_plot_drawer::show () const
-{
-  m_view->show ();
-}
+//void abstract_plot_drawer::set_scale (const int scale)
+//{
+//  calculate_pivot_points ();
+//  redraw_all ();
+//}
 
-void abstract_plot_drawer::set_scale (const int scale)
-{
-  if (scale == 0)
-    return;
-  m_view->set_scale (scale);
-  calculate_pivot_points ();
-  redraw_all ();
-}
 
-int abstract_plot_drawer::scale () const
+void abstract_plot_drawer::paintEvent(QPaintEvent *event)
 {
-  return m_scale;
-}
+    m_painter->begin (this);
+  (void)event;
+  int graphs_count = m_plot_model->graphs_count ();
 
-void abstract_plot_drawer::set_centered ()
-{
-  m_view->centerOn (0, 0);
-  m_view->ensureVisible (sceneRect ());
+  for (int i = 0; i < graphs_count; i++)
+    draw_graph (i);
+  draw_grid ();
+  m_painter->end ();
+
 }
 
 void abstract_plot_drawer::set_default ()
 {
-  if (!m_view)
-    m_view = new graphics_view;
+  if (!m_painter)
+    m_painter = new graph_painter;
   m_x_min = 0;
   m_x_max = 2;
   m_y_min = 0;
   m_y_max = 2;
-  m_scale = 20;
-  m_view->set_scale (m_scale);
   m_smooth = 5;
   calculate_pivot_points ();
-  setBackgroundBrush (QBrush(QColor ("#E8E3E6")));
 }
 
 QPen abstract_plot_drawer::set_pen (const int graph_num) const
@@ -93,33 +82,35 @@ QPen abstract_plot_drawer::set_pen (const int graph_num) const
 
 void abstract_plot_drawer::draw_grid ()
 {
+
   QPen pen;
   pen.setColor(Qt::black);
   pen.setCosmetic (true);
   pen.setStyle (Qt::SolidLine);
   pen.setWidth (0);
-  double coef = 80.0 / m_scale / m_scale;
+  m_painter->setPen (pen);
   double l_axis, r_axis, u_axis, b_axis;
+  double coef = 5;
   calculate_axis_length (l_axis, r_axis, u_axis, b_axis);
   QPointF o (0, 0);
-  QPointF x_axis (r_axis, 0);
-  QPointF y_axis (0, u_axis);
+  QPointF x_axis (width (), 0);
+  QPointF y_axis (0, height ());
   QPointF tail_x_axis (-l_axis, 0);
   QPointF tail_y_axis (0, -b_axis);
   QPointF x_axis_arrow_u (r_axis - coef, coef);
   QPointF x_axis_arrow_d (r_axis - coef, -coef);
   QPointF y_axis_arrow_l (-coef, u_axis - coef);
   QPointF y_axis_arrow_r (coef, u_axis - coef);
-  addLine (QLineF (o, x_axis), pen);
-  addLine (QLineF (o, y_axis), pen);
-  addLine (QLineF (tail_x_axis, o), pen);
-  addLine (QLineF (tail_y_axis, o), pen);
-  addLine (QLineF (x_axis_arrow_u, x_axis), pen);
-  addLine (QLineF (x_axis_arrow_d, x_axis), pen);
-  addLine (QLineF (y_axis_arrow_l, y_axis), pen);
-  addLine (QLineF (y_axis_arrow_r, y_axis), pen);
-  addLine (1, -coef, 1, coef, pen);
-  addLine (-coef, 1, coef, 1, pen);
+  m_painter->drawLine (QLineF (o, x_axis));
+  m_painter->drawLine (QLineF (o, y_axis));
+  m_painter->drawLine (QLineF (tail_x_axis, o));
+  m_painter->drawLine (QLineF (tail_y_axis, o));
+  m_painter->drawLine (QLineF (x_axis_arrow_u, x_axis));
+  m_painter->drawLine (QLineF (x_axis_arrow_d, x_axis));
+  m_painter->drawLine (QLineF (y_axis_arrow_l, y_axis));
+  m_painter->drawLine (QLineF (y_axis_arrow_r, y_axis));
+  m_painter->drawLine (1, -coef, 1, coef);
+  m_painter->drawLine (-coef, 1, coef, 1);
 
   int max = (abs(m_x_max) > abs(m_x_min)) ? m_x_max : m_x_min;
   max = abs (max);
@@ -127,7 +118,6 @@ void abstract_plot_drawer::draw_grid ()
     max = abs(m_y_max);
   if (max < abs (m_y_min))
     max = abs(m_y_min);
-  setSceneRect (-l_axis, -b_axis, r_axis + l_axis + 1, u_axis + b_axis + 1);
 }
 
 void abstract_plot_drawer::draw_graph (const int graph_num)
@@ -136,7 +126,7 @@ void abstract_plot_drawer::draw_graph (const int graph_num)
     return;
 
   QPen pen = set_pen (graph_num);
-
+  m_painter->setPen (pen);
   double a, b;
   m_plot_model->bounds (graph_num, a, b);
   if (a < m_x_min)
@@ -168,7 +158,7 @@ void abstract_plot_drawer::draw_graph (const int graph_num)
       second.setX (second.x ());
       second.setY (second.y ());
 
-      addLine (first.x (), first.y (), second.x (), second.y (), pen);
+      m_painter->drawLine (first, second);
       first = second;
       if (first.y () < m_y_min)
         m_y_min = first.y ();
@@ -179,14 +169,7 @@ void abstract_plot_drawer::draw_graph (const int graph_num)
 
 void abstract_plot_drawer::redraw_all ()
 {
-  clear ();
-
-  QPen pen = set_pen (0);
-  int graphs_count = m_plot_model->graphs_count ();
-
-  for (int i = 0; i < graphs_count; i++)
-    draw_graph (i);
-  draw_grid ();
+  update ();
 
 }
 
@@ -198,20 +181,26 @@ void abstract_plot_drawer::on_model_changed ()
 void abstract_plot_drawer::calculate_pivot_points ()
 {
   int grid_columns = (int)ceil(m_x_max - m_x_min) ;
-  m_pivot_count = grid_columns * m_smooth * m_scale;
+  m_pivot_count = grid_columns * m_smooth;
   if (m_pivot_count < 2)
     m_pivot_count = 2;
 }
 
 void abstract_plot_drawer::calculate_axis_length (double &l_axis, double &r_axis, double &u_axis, double &b_axis)
 {
+  double pixels_in_x;
+  if (fabs (m_x_max - m_x_min) < 1e-15)
+    std::abort ();
+
+  pixels_in_x = width () / (m_x_max - m_x_min);
+
   if (m_x_min > 0)
     l_axis = 0;
   else
-    l_axis = (m_x_min < -m_axis_max) ? m_axis_max : abs (m_x_min) + 1;
+    l_axis = pixels_in_x * (-m_x_min);
 
   if (m_x_max < 0)
-    r_axis = 2;
+    r_axis = 0;
   else
     r_axis = (m_x_max > m_axis_max) ? m_axis_max : m_x_max + 1;
 

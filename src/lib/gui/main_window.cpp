@@ -13,6 +13,8 @@
 #include <QHBoxLayout>
 #include "gui_checkbox_group.h"
 #include "stretch.h"
+#include "plot_widget.h"
+#include "graph_painter.h"
 
 main_window::main_window (QWidget *parent) : QDialog (parent)
 {
@@ -30,14 +32,14 @@ main_window::~main_window ()
 
 QSize main_window::sizeHint() const
 {
-  return QSize (1024, 780);
+  return QSize (1380, 900);
 }
 
 void main_window::set_layouts ()
 {
   QVBoxLayout *vlo_1 = new QVBoxLayout;
   {
-    vlo_1->addWidget (m_plot_drawer->get_view ());
+    vlo_1->addWidget (m_plot_drawer);
     int spinbox_size;
     int label_size;
 
@@ -61,9 +63,6 @@ void main_window::set_layouts ()
     }
     vlo_1->addLayout (hlo_1);
 
-    QPushButton *center = new QPushButton ("to center", this);
-    connect (center, SIGNAL (clicked ()), m_plot_drawer, SLOT (set_centered ()));
-    vlo_1->addWidget (center, 0, Qt::AlignLeft);
     std::vector<QString> labels;
     labels.push_back ("origin");
 
@@ -101,13 +100,16 @@ void main_window::open_greetings_window ()
           min = max;
           max = buf;
         }
-      m_plot_drawer = new abstract_plot_drawer (this);
+      graph_painter *plot_painter = new graph_painter;
+
       m_plot_model = new interpol_plot_model (min, max, 2);
       m_plot_model->set_origin_func (std::function<double(const double)> (func_to_aprox));
       m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
       {deriv (min), deriv (max)});
       m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes, deriv);
-      m_plot_drawer->set_model (m_plot_model);
+      plot_painter->set_model (m_plot_model);
+      m_plot_drawer = new plot_widget (plot_painter, this);
+      connect (m_plot_model, SIGNAL (model_changed ()), m_plot_drawer, SLOT (update ()));
       break;
     }
 

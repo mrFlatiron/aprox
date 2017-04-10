@@ -3,6 +3,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 CONFIG += с++11
+CONFIG += debug
 
 SOURCES += \
     src/lib/gui/main_window.cpp \
@@ -19,11 +20,12 @@ SOURCES += \
     src/lib/gui/abstract_plot_drawer.cpp \
     src/lib/gui/abstract_plot_model.cpp \
     src/lib/containers/any_t.cpp \
-    src/lib/gui/graphics_view.cpp \
     src/lib/gui/interpol_plot_model.cpp \
     src/lib/gui/stretch.cpp \
     src/lib/gui/gui_checkbox_group.cpp \
-    src/lib/gui/gui_checkbox_w_id.cpp
+    src/lib/gui/gui_checkbox_w_id.cpp \
+    src/lib/gui/graph_painter.cpp \
+    src/lib/gui/plot_widget.cpp
 
 HEADERS += \
     src/lib/gui/main_window.h \
@@ -42,11 +44,12 @@ HEADERS += \
     src/lib/gui/abstract_plot_model.h \
     src/lib/gui/abstract_plot_defs.h \
     src/lib/containers/any_t.h \
-    src/lib/gui/graphics_view.h \
     src/lib/gui/interpol_plot_model.h \
     src/lib/gui/stretch.h \
     src/lib/gui/gui_checkbox_group.h \
-    src/lib/gui/gui_checkbox_w_id.h
+    src/lib/gui/gui_checkbox_w_id.h \
+    src/lib/gui/graph_painter.h \
+    src/lib/gui/plot_widget.h
 
 INCLUDEPATH += src/lib
 INCLUDEPATH += src
