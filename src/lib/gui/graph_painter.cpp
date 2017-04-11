@@ -24,15 +24,39 @@ void graph_painter::draw_axis ()
   drawLine (o, x);
   drawLine (o, y);
 
-  drawText (to_scale (QPointF (m_x_min, 0)).x (), d_height - m_ox_shift + 15, QString::number (m_x_min));
+  QPen save_pen = pen ();
+  QPen temp_pen;
+  temp_pen.setStyle (Qt::DashLine);
+  temp_pen.setCosmetic (true);
+  temp_pen.setWidth (1);
+  temp_pen.setColor (Qt::lightGray);
+
+  setPen (temp_pen);
+  drawLine (m_oy_shift, to_scale (QPointF (0, 0)).y (), d_width, to_scale (QPointF (0, 0)). y ());
+  setPen (save_pen);
+
+
   double med = (m_x_max + m_x_min) / 2;
+  drawText (to_scale (QPointF (m_x_min, 0)).x (), d_height - m_ox_shift + 15, QString::number (m_x_min));
   drawText (to_scale (QPointF (med, 0)).x (), d_height - m_ox_shift + 15, QString::number (med));
   drawText (to_scale (QPointF (m_x_max, 0)).x (), d_height - m_ox_shift + 15, QString::number (m_x_max));
 
-  drawText (0, to_scale (QPointF (0, m_y_min)).y (), QString::number (m_y_min, 'e', 2));
   med = (m_y_max + m_y_min) / 2;
-  drawText (0, to_scale (QPointF (0, med)).y (), QString::number (med, 'e', 2));
-  drawText (0, to_scale (QPointF (0, m_y_max)).y (), QString::number (m_y_max, 'e', 2));
+  double y_min_text = to_scale (QPointF (0, m_y_min)).y ();
+  double y_med_text = to_scale (QPointF (0, med)).y ();
+  double y_max_text = to_scale (QPointF (0, m_y_max)).y ();
+  double y_o_text = to_scale (QPointF (0, 0)).y ();
+
+  drawText (0, y_min_text, QString::number (m_y_min, 'e', 2));
+  drawText (0, y_med_text, QString::number (med, 'e', 2));
+  drawText (0, y_max_text, QString::number (m_y_max, 'e', 2));
+
+  if (!(fabs (y_min_text - y_o_text) < 10
+        || (fabs (y_med_text - y_o_text) < 10)
+        || (fabs (y_max_text - y_o_text) < 10)))
+    drawText (m_oy_shift - 35, y_o_text, QString::number (0));
+
+
 //  setViewport (10, 10, d_width - 10, d_height - 10);
 }
 
