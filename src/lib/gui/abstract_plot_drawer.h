@@ -15,6 +15,8 @@ private:
  graph_painter *m_painter = nullptr;
  double m_x_scale = 1;
  double m_y_scale = 1;
+ double m_x_shift;
+ double m_y_shift;
  int m_smooth;
  int m_pivot_count;
  double m_x_min;

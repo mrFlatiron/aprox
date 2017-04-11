@@ -12,7 +12,9 @@ private:
   double m_x_scale = 1;
   double m_y_scale = 1;
   double m_smooth = 10;
-  double m_axis_shift = 15;
+  double m_graphs_shift = 15;
+  double m_ox_shift = 50;
+  double m_oy_shift = 70;
   double m_y_min;
   double m_y_max;
   double m_x_min;
@@ -30,7 +32,7 @@ public:
 private:
   void calculate_pivot_count ();
 //  void calculate_axis_length (double &l_axis, double &r_axis, double &u_axis, double &b_axis);
-  QRect calculate_window_rect (double &x_scale, double &y_scale);
+  void calculate_window_rect ();
   void calculate_graph_vert_bounds (const int graph_num, double &y_max, double &loc_max);
   QPen set_pen (const int graph_num) const;
   QPointF to_scale (QPointF point);

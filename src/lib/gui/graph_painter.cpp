@@ -16,15 +16,23 @@ void graph_painter::draw_axis ()
   int d_width = device ()->width ();
   int d_height = device ()->height ();
 
-  int m_axis_shift = 15;
 
-  QPoint o (m_axis_shift, d_height - m_axis_shift);
-  QPoint x (d_width - m_axis_shift, d_height - m_axis_shift);
-  QPoint y (m_axis_shift, m_axis_shift);
+  QPoint o (m_oy_shift, d_height - m_ox_shift);
+  QPoint x (d_width, d_height - m_ox_shift);
+  QPoint y (m_oy_shift, 0);
 
   drawLine (o, x);
   drawLine (o, y);
-  drawText (50, d_height, "1");
+
+  drawText (to_scale (QPointF (m_x_min, 0)).x (), d_height - m_ox_shift + 15, QString::number (m_x_min));
+  double med = (m_x_max + m_x_min) / 2;
+  drawText (to_scale (QPointF (med, 0)).x (), d_height - m_ox_shift + 15, QString::number (med));
+  drawText (to_scale (QPointF (m_x_max, 0)).x (), d_height - m_ox_shift + 15, QString::number (m_x_max));
+
+  drawText (0, to_scale (QPointF (0, m_y_min)).y (), QString::number (m_y_min, 'e', 2));
+  med = (m_y_max + m_y_min) / 2;
+  drawText (0, to_scale (QPointF (0, med)).y (), QString::number (med, 'e', 2));
+  drawText (0, to_scale (QPointF (0, m_y_max)).y (), QString::number (m_y_max, 'e', 2));
 //  setViewport (10, 10, d_width - 10, d_height - 10);
 }
 
@@ -60,13 +68,13 @@ void graph_painter::draw_graph (const int graph_num)
 
 void graph_painter::redraw_all ()
 {
-  draw_axis ();
-  double x_scale, y_scale;
-  QRect rect = calculate_window_rect (x_scale, y_scale);
+    calculate_window_rect ();
+    draw_axis ();
+
+
 //  setViewport (m_axis_shift, m_axis_shift, device ()->width () - m_axis_shift, device ()->height () - m_axis_shift);
-  setWindow (rect);
-  m_x_scale = x_scale;
-  m_y_scale = y_scale;
+//  setWindow (rect);
+
 
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
@@ -92,7 +100,7 @@ void graph_painter::calculate_pivot_count ()
   m_pivot_count = device()->width () / 100 * m_smooth;
 }
 
-QRect graph_painter::calculate_window_rect (double &x_scale, double &y_scale)
+void graph_painter::calculate_window_rect ()
 {
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
@@ -131,43 +139,28 @@ QRect graph_painter::calculate_window_rect (double &x_scale, double &y_scale)
         }
     }
 
-  double len = m_x_max - m_x_min;
-  double left = m_x_min - len / 10;
-  double width = len + len / 5;
+  double width = m_x_max - m_x_min;
+  double height = m_y_max - m_y_min;
 
-  len = m_y_max - m_y_min;
-  double top = m_y_max + len / 10;
-  double height = m_y_max - m_y_min + len / 5;
+
   int d_width = device ()->width ();
   int d_height = device ()->height ();
-  int ileft = (int)ceil(left);
-  int itop = (int)ceil(top);
-  int iwidth = (int)ceil(width);
-  int iheight = (int)ceil(height);
 
-  QRect to_ret = QRect (ileft, itop, iwidth, -iheight);
+  int work_height = d_height  - 2 * m_graphs_shift - m_ox_shift;
+  int work_width = d_width - 2 * m_graphs_shift - m_oy_shift;
 
-  if (iheight == 1)
-    {
-      if (m_y_max - m_y_min > 1e-35)
-        y_scale = iheight / (m_y_max - m_y_min);
-      else
-        y_scale = iheight / 1e-30;
-    }
+  if (height > 1e-35)
+    m_y_scale = (work_height) / (m_y_max - m_y_min);
   else
-    y_scale = 1;
+    m_y_scale = (work_height) / 1e-30;
 
-  if (iwidth == 1)
-    {
-      if (m_x_max - m_x_min > 1e-35)
-        x_scale = iwidth / (m_x_max - m_x_min);
-      else
-        x_scale = iwidth / 1e-30;
-    }
+
+
+  if (width > 1e-35)
+    m_x_scale = (work_width) / (m_x_max - m_x_min);
   else
-    x_scale = 1;
+    m_x_scale = (work_width) / 1e-30;
 
-  return to_ret;
 //  setTransform (QTransform (10, 0, 0,
 //                            0, -10, 0,
 //                            0, 0, 1));
@@ -236,7 +229,8 @@ QPen graph_painter::set_pen (const int graph_num) const
 
 QPointF graph_painter::to_scale (QPointF point)
 {
-  return QPointF (point.x () * m_x_scale, point.y () * m_y_scale);
+  return QPointF ((point.x () - m_x_min) * m_x_scale + m_oy_shift + m_graphs_shift,
+                  (point.y () - m_y_max) * -m_y_scale + m_graphs_shift);
 }
 
 void graph_painter::draw_line (QPointF point_a, QPointF point_b)

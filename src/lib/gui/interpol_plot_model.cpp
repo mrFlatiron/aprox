@@ -164,6 +164,7 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
           return 3;
         case graph_role::shown:
           return m_interpol_shown[id];
+//          return false;
         }
     }
   return QVariant ();

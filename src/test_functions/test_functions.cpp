@@ -3,13 +3,13 @@
 
 double func_to_aprox (const double x)
 {
-  return  x;
+  return  pow (x, 5);
 }
 
 double deriv (const double x)
 {
   (void)x;
-  return 1;
+  return 5 * pow (x, 4);
 }
 
 double id (const double x)

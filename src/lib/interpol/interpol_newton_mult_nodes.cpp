@@ -202,7 +202,7 @@ void newton_mult_nodes::compute_div_difs ()
       for (unsigned int store_pos = k - 1; store_pos < 2 * m_points_count; store_pos++)
         {
           double x2 = m_xes[store_pos / 2];
-          double x1 = m_xes[store_pos / 2 - (k - 1) / 2];
+          double x1 = m_xes[(store_pos - k + 1) / 2];
           double s = m_div_difs[store_pos];
           m_div_difs[store_pos] = (s - f) / (x2 - x1);
           f = s;
