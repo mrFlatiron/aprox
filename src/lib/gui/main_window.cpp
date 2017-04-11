@@ -1,5 +1,4 @@
 #include "main_window.h"
-#include "abstract_plot_drawer.h"
 #include "interpol_plot_model.h"
 #include "interpol/interpol_factory.h"
 #include "greet_window.h"

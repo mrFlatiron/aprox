@@ -30,9 +30,10 @@ public:
   void set_model (abstract_plot_model *model);
   virtual ~graph_painter ();
 private:
+  QPointF get_first_graph_point (const int graph_num, const bool discrete) const;
+  QPointF get_next_graph_point (const int graph_num, const bool discrete, int &inout, bool &end) const;
   void calculate_pivot_count ();
-//  void calculate_axis_length (double &l_axis, double &r_axis, double &u_axis, double &b_axis);
-  void calculate_window_rect ();
+  void calculate_plot_params ();
   void calculate_graph_vert_bounds (const int graph_num, double &y_max, double &loc_max);
   QPen set_pen (const int graph_num) const;
   QPointF to_scale (QPointF point);

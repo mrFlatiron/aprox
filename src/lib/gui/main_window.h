@@ -3,7 +3,6 @@
 
 #include "gui_enums.h"
 
-class abstract_plot_drawer;
 class interpol_plot_model;
 class plot_scene;
 class QLineEdit;

@@ -44,6 +44,7 @@ public:
   void reinterpolate ();
   virtual int graphs_count () const override;
   virtual QPointF point_by_x (const int graph_num, const double x) const override;
+  virtual QPointF point_by_num (const int graph_num, const int point_num) const override;
   virtual QVariant paint_config (const int graph_num, const graph_role role) const override;
   virtual void bounds(const int graph_num, double &left, double &right) const override;
 

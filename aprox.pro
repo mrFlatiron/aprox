@@ -17,7 +17,6 @@ SOURCES += \
     src/tests/window_test.cpp \
     src/lib/gui/greet_window.cpp \
     src/test_functions/test_functions.cpp \
-    src/lib/gui/abstract_plot_drawer.cpp \
     src/lib/gui/abstract_plot_model.cpp \
     src/lib/containers/any_t.cpp \
     src/lib/gui/interpol_plot_model.cpp \
@@ -40,7 +39,6 @@ HEADERS += \
     src/lib/gui/greet_window.h \
     src/lib/gui/gui_enums.h \
     src/test_functions/test_functions.h \
-    src/lib/gui/abstract_plot_drawer.h \
     src/lib/gui/abstract_plot_model.h \
     src/lib/gui/abstract_plot_defs.h \
     src/lib/containers/any_t.h \

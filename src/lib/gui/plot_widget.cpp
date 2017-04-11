@@ -17,9 +17,6 @@ void plot_widget::paintEvent (QPaintEvent *event)
   (void)event;
   m_painter->begin (this);
   m_painter->redraw_all ();
-//  m_painter->drawRect (, 0, 300, 300);
-//  m_painter->drawRect (rect ());
-//  QRect r = rect ();
   m_painter->end ();
 }
 

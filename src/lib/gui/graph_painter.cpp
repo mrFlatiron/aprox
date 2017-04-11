@@ -56,8 +56,6 @@ void graph_painter::draw_axis ()
         || (fabs (y_max_text - y_o_text) < 10)))
     drawText (m_oy_shift - 35, y_o_text, QString::number (0));
 
-
-//  setViewport (10, 10, d_width - 10, d_height - 10);
 }
 
 void graph_painter::draw_graph (const int graph_num)
@@ -68,23 +66,16 @@ void graph_painter::draw_graph (const int graph_num)
   QPen pen = set_pen (graph_num);
   setPen (pen);
 
-  double a = m_x_min;
-  double b = m_x_max;
-
-
-  double x = a;
+  bool discrete = m_plot_model->paint_config (graph_num, graph_role::discrete).toBool ();
 
   QPointF first, second;
 
-  first = m_plot_model->point_by_x (graph_num, x);
-
-  double hx = (b - a) / (m_pivot_count - 1);
-  for (int i = 1; i < m_pivot_count; i++)
+  first = get_first_graph_point (graph_num, discrete);
+  bool end = false;
+  int i = 0;
+  while (!end)
     {
-      x = a + hx * i;
-
-      second = m_plot_model->point_by_x (graph_num, x);
-
+      second = get_next_graph_point (graph_num, discrete, i, end);
       draw_line (first, second);
       first = second;
     }
@@ -92,13 +83,8 @@ void graph_painter::draw_graph (const int graph_num)
 
 void graph_painter::redraw_all ()
 {
-    calculate_window_rect ();
+    calculate_plot_params ();
     draw_axis ();
-
-
-//  setViewport (m_axis_shift, m_axis_shift, device ()->width () - m_axis_shift, device ()->height () - m_axis_shift);
-//  setWindow (rect);
-
 
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
@@ -119,12 +105,57 @@ graph_painter::~graph_painter ()
 
 }
 
+QPointF graph_painter::get_first_graph_point (const int graph_num, const bool discrete) const
+{
+  double a, b;
+  m_plot_model->bounds (graph_num, a, b);
+  if (discrete)
+    return m_plot_model->point_by_num (graph_num, 0);
+  else
+    return m_plot_model->point_by_x (graph_num, a);
+}
+
+QPointF graph_painter::get_next_graph_point (const int graph_num, const bool discrete, int &inout, bool &end) const
+{
+  double a, b;
+  m_plot_model->bounds (graph_num, a, b);
+  inout++;
+  if (discrete)
+    {
+      if (inout < m_plot_model->paint_config (graph_num, graph_role::points_count).toInt () - 1)
+        {
+          end = false;
+          return m_plot_model->point_by_num (graph_num, inout);
+        }
+        else
+        {
+          end = true;
+          return m_plot_model->point_by_num (graph_num, inout);
+        }
+    }
+  else
+    {
+      double hx = (b - a) / (m_pivot_count - 1);
+      double x = a + inout * hx;
+      if (x < b)
+        {
+          end = false;
+          return m_plot_model->point_by_x (graph_num, x);
+        }
+      else
+        {
+          end = true;
+          return m_plot_model->point_by_x (graph_num, b);
+        }
+    }
+}
+
 void graph_painter::calculate_pivot_count ()
 {
   m_pivot_count = device()->width () / 100 * m_smooth;
 }
 
-void graph_painter::calculate_window_rect ()
+void graph_painter::calculate_plot_params ()
 {
   int graphs_count = m_plot_model->graphs_count ();
   for (int i = 0; i < graphs_count; i++)
@@ -185,23 +216,6 @@ void graph_painter::calculate_window_rect ()
   else
     m_x_scale = (work_width) / 1e-30;
 
-//  setTransform (QTransform (10, 0, 0,
-//                            0, -10, 0,
-//                            0, 0, 1));
-
-//  int side = d_width;
-//  int x = (device ()->width() - side / 2);
-//  int y = (device ()->height() - side / 2);
-
- // setViewport(0, 0, d_width, d_height);
-//  scale (d_width / width, d_height /  height);
-//  scale (1, -1);
-//  translate (0, fabs (m_y_min));
-//  translate (fabs (m_x_min) * d_width / width, fabs (m_y_max) * d_height / height);
-//  setPen (set_pen (0));
-//  drawText (m_x_min, m_y_min, "1");
-//  drawText (0, 0, "2");
-//  drawText (m_x_max, m_y_max, "3");
 }
 
 void graph_painter::calculate_graph_vert_bounds (const int graph_num,

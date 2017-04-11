@@ -139,6 +139,11 @@ QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) co
     }
 }
 
+QPointF interpol_plot_model::point_by_num (const int graph_num, const int point_num) const
+{
+  return QPointF ();
+}
+
 QVariant interpol_plot_model::paint_config (const int graph_num, const graph_role role) const
 {
   int id = graph_num - 1;
@@ -148,6 +153,8 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
     case 0:
       switch (role)
         {
+        case graph_role::discrete:
+          return false;
         case graph_role::color:
           return QColor (Qt::green);
         case graph_role::width:
@@ -158,6 +165,8 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
     default:
       switch (role)
         {
+        case graph_role::discrete:
+          return false;
         case graph_role::color:
           return get_color (type);
         case graph_role::width:
@@ -205,19 +214,6 @@ void interpol_plot_model::change_visible_graphs (int id, bool shown)
     }
   emit model_changed ();
 }
-
-
-//void interpol_plot_model::on_points_count_changed (int points_count)
-//{
-//  m_points_count = abs (points_count);
-//  for (int i = 0; i < (int)(m_interpols.size ()); i++)
-//    {
-//      interpol::polynom *p = m_interpols[i].get ();
-//      p->interpolate_function (m_x_min, m_x_max, m_points_count,
-//                                        m_origin, m_additionals[type]);
-//    }
-//  emit model_changed ();
-//}
 
 
 
