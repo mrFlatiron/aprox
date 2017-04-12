@@ -51,7 +51,7 @@ namespace interpol
                                        std::function<double(const double)> f,
                                        std::function<double(const double)> d);
     virtual void interpolate_points (const std::vector<double> &xes, const std::vector<double> &ys,
-                                     const std::vector<double> &derivs_) = 0;
+                                     const std::vector<double> &additional) = 0;
     double eval (const double x) const; //operator () alias;
     virtual unsigned int get_add_size () const;
     virtual additional_array_size get_add_type () const = 0;

@@ -38,6 +38,15 @@ QLayout *gui_checkbox_group::as_layout () const
   return m_layout;
 }
 
+void gui_checkbox_group::uncheck_all ()
+{
+  for (auto pb : m_boxes)
+    {
+      if (pb->isChecked ())
+        pb->toggle ();
+    }
+}
+
 void gui_checkbox_group::on_toggled (int id, bool checked)
 {
   emit box_toggled (id, checked);

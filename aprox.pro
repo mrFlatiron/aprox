@@ -18,7 +18,6 @@ SOURCES += \
     src/lib/gui/greet_window.cpp \
     src/test_functions/test_functions.cpp \
     src/lib/gui/abstract_plot_model.cpp \
-    src/lib/containers/any_t.cpp \
     src/lib/gui/interpol_plot_model.cpp \
     src/lib/gui/stretch.cpp \
     src/lib/gui/gui_checkbox_group.cpp \
@@ -41,7 +40,6 @@ HEADERS += \
     src/test_functions/test_functions.h \
     src/lib/gui/abstract_plot_model.h \
     src/lib/gui/abstract_plot_defs.h \
-    src/lib/containers/any_t.h \
     src/lib/gui/interpol_plot_model.h \
     src/lib/gui/stretch.h \
     src/lib/gui/gui_checkbox_group.h \

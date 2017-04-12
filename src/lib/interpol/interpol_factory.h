@@ -97,7 +97,8 @@ namespace interpol
   }
 
   template<class T>
-  T *create_polynom (const double a, const double b,
+  T *
+  create_polynom (const double a, const double b,
                      const unsigned int points_count,
                      std::function<double(const double)> f,
                      std::function<double(const double)> d)

@@ -20,16 +20,21 @@ private:
   double m_x_max;
   int m_points_count;
   int m_shown_count;
+  std::vector<double> m_origin_xes;
+  std::vector<double> m_origin_ys;
   std::function<double(const double)> m_origin;
   std::vector<std::unique_ptr<interpol::polynom>> m_interpols;
   std::vector<std::vector<double>> m_additional_vectors;
   std::vector<std::function<double(const double)>> m_additional_funcs;
   std::vector<bool> m_interpol_shown;
   bool m_origin_shown = true;
+  int m_discrepancy_id = -1;
 public:
   interpol_plot_model () = delete;
   interpol_plot_model (const double x_min, const double x_max,
                        const int points_count);
+  interpol_plot_model (const std::vector<double> &xes,
+                       const std::vector<double> &ys);
   virtual ~interpol_plot_model ();
   void set_meta (const double x_min,
                  const double x_max,
@@ -39,6 +44,7 @@ public:
   void add_interpol (const interpol::polynom_type type,
                      std::function<double(const double)> d);
   void set_origin_func (const std::function <double(const double)> &origin);
+  void set_origin_points (const std::vector <double> &xes, const std::vector <double> &ys);
   int get_points_count () const;
   void set_points_count (const int points_count);
   void reinterpolate ();
@@ -52,6 +58,7 @@ public:
 
 public slots:
   void change_visible_graphs (int id, bool shown);
+  void change_discrepancy_graph (int id);
 
 private:
   void calc_id_for_diff ();

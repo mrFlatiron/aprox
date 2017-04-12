@@ -15,6 +15,16 @@ interpol_plot_model::interpol_plot_model (const double x_min,
   set_meta (x_min, x_max, points_count);
 }
 
+interpol_plot_model::interpol_plot_model (const std::vector<double> &xes, const std::vector<double> &ys) :
+  m_shown_count (0),
+  m_interpols ((int)interpol::polynom_type::COUNT),
+  m_additional_vectors ((int)interpol::polynom_type::COUNT),
+  m_additional_funcs ((int)interpol::polynom_type::COUNT),
+  m_interpol_shown ((int)interpol::polynom_type::COUNT)
+{
+  set_origin_points (xes, ys);
+}
+
 interpol_plot_model::~interpol_plot_model ()
 {
 
@@ -32,22 +42,30 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
 {
   int id = (int)type;
   {
-  using namespace interpol;
-  switch (type)
-    {
-    case polynom_type::c_spline_w_derivs:
-     m_additional_vectors[id] = additional;
-      m_interpols[id].reset (create_polynom
-                                          <c_splines_w_derivs>
-                                          (m_x_min, m_x_max, (unsigned int)m_points_count,
-                                           m_origin, additional));
+    using namespace interpol;
+    m_additional_vectors[id] = additional;
+    switch (type)
+      {
+      case polynom_type::c_spline_w_derivs:
 
-      break;
-    case polynom_type::newton_mult_nodes:
-      std::abort ();
-    case polynom_type::COUNT:
-      std::abort ();
-    }
+        if (!m_origin_xes.size ())
+          m_interpols[id].reset (create_polynom
+                                 <c_splines_w_derivs>
+                                 (m_x_min, m_x_max, (unsigned int)m_points_count,
+                                  m_origin, additional));
+        else
+          m_interpols[id].reset (create_polynom
+                                 <c_splines_w_derivs>
+                                 (m_origin_xes, m_origin_ys, additional));
+        break;
+      case polynom_type::newton_mult_nodes:
+        m_interpols[id].reset (create_polynom
+                               <newton_mult_nodes>
+                               (m_origin_xes, m_origin_ys, additional));
+        break;
+      case polynom_type::COUNT:
+        std::abort ();
+      }
   }
   m_interpol_shown[id] = true;
   m_shown_count++;
@@ -64,10 +82,12 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
       {
       case polynom_type::newton_mult_nodes:
         m_additional_funcs[id] = d;
-        m_interpols[id].reset (create_polynom <newton_mult_nodes>(m_x_min, m_x_max,
-                                                                        (unsigned int)m_points_count,
-                                                                        m_origin, d));
 
+        m_interpols[id].reset (create_polynom
+                               <newton_mult_nodes>
+                               (m_x_min, m_x_max,
+                                (unsigned int)m_points_count,
+                                m_origin, d));
         break;
       case polynom_type::c_spline_w_derivs:
         std::abort ();
@@ -83,6 +103,16 @@ void interpol_plot_model::add_interpol (const interpol::polynom_type type,
 void interpol_plot_model::set_origin_func (const std::function<double (const double)> &origin)
 {
   m_origin = origin;
+}
+
+void interpol_plot_model::set_origin_points (const std::vector<double> &xes, const std::vector<double> &ys)
+{
+  m_origin_xes = xes;
+  m_origin_ys = ys;
+  m_points_count = xes.size ();
+  m_x_min = xes[0];
+  m_x_max = xes[m_points_count - 1];
+
 }
 
 int interpol_plot_model::get_points_count () const
@@ -123,16 +153,18 @@ void interpol_plot_model::reinterpolate ()
 
 int interpol_plot_model::graphs_count () const
 {
-  return m_interpol_shown.size () + 1;
+  return m_interpol_shown.size () + 2;
 }
 
 QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) const
 {
-  int id = graph_num - 1;
+  int id = graph_num - 2;
   switch (graph_num)
     {
     case 0: //origin
       return QPointF (x, m_origin (x));
+    case 1: //discrepancy
+      return QPointF (x, m_origin (x) - m_interpols[m_discrepancy_id]->eval (x));
     default:
       interpol::polynom *p = m_interpols[id].get ();
       return QPointF (x, p->eval (x));
@@ -141,12 +173,14 @@ QPointF interpol_plot_model::point_by_x (const int graph_num, const double x) co
 
 QPointF interpol_plot_model::point_by_num (const int graph_num, const int point_num) const
 {
-  return QPointF ();
+  if (graph_num != 0)
+    return QPointF ();
+  return QPointF (m_origin_xes[point_num], m_origin_ys[point_num]);
 }
 
 QVariant interpol_plot_model::paint_config (const int graph_num, const graph_role role) const
 {
-  int id = graph_num - 1;
+  int id = graph_num - 2;
   interpol::polynom_type type = (interpol::polynom_type)id;
   switch (graph_num)
     {
@@ -154,7 +188,14 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
       switch (role)
         {
         case graph_role::discrete:
-          return false;
+          {
+            if (m_origin_xes.size ())
+              return true;
+            else
+              return false;
+          }
+        case graph_role::points_count:
+          return (int)m_origin_xes.size ();
         case graph_role::color:
           return QColor (Qt::green);
         case graph_role::width:
@@ -162,11 +203,30 @@ QVariant interpol_plot_model::paint_config (const int graph_num, const graph_rol
         case graph_role::shown:
           return m_origin_shown;
         }
+    case 1:
+      switch (role)
+        {
+        case graph_role::discrete:
+          return false;
+        case graph_role::points_count:
+          return 0;
+        case graph_role::color:
+          return QColor (Qt::darkYellow);
+        case graph_role::width:
+          return 3;
+        case graph_role::shown:
+          if (m_discrepancy_id >= 0)
+            return true;
+          else
+            return false;
+        }
     default:
       switch (role)
         {
         case graph_role::discrete:
           return false;
+        case graph_role::points_count:
+          return 0;
         case graph_role::color:
           return get_color (type);
         case graph_role::width:
@@ -203,6 +263,8 @@ QColor interpol_plot_model::get_color (const interpol::polynom_type type) const
 
 void interpol_plot_model::change_visible_graphs (int id, bool shown)
 {
+  if (shown)
+    m_discrepancy_id = -1;
   switch (id)
     {
     case 0:
@@ -212,6 +274,12 @@ void interpol_plot_model::change_visible_graphs (int id, bool shown)
       m_interpol_shown[id - 1] = shown;
       break;
     }
+  emit model_changed ();
+}
+
+void interpol_plot_model::change_discrepancy_graph (int id)
+{
+  m_discrepancy_id = id;
   emit model_changed ();
 }
 

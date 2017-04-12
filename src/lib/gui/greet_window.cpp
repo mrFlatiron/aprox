@@ -65,7 +65,10 @@ greet_window::~greet_window ()
 
 data_source greet_window::get_source_type () const
 {
-  return m_source_type;
+  if (m_boxes[0]->isChecked ())
+    return data_source::file;
+  else
+    return data_source::function;
 }
 
 QString greet_window::get_path () const

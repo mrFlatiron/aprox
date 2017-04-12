@@ -9,7 +9,7 @@ plot_widget::plot_widget (graph_painter *painter, QWidget *parent)
 
 QSize plot_widget::sizeHint () const
 {
-  return QSize (1024, 780);
+  return QSize (1500, 1500);
 }
 
 void plot_widget::paintEvent (QPaintEvent *event)

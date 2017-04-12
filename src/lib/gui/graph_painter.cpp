@@ -158,6 +158,7 @@ void graph_painter::calculate_pivot_count ()
 void graph_painter::calculate_plot_params ()
 {
   int graphs_count = m_plot_model->graphs_count ();
+  bool first = true;
   for (int i = 0; i < graphs_count; i++)
     {
       if (!m_plot_model->paint_config (i, graph_role::shown).toBool ())
@@ -165,7 +166,7 @@ void graph_painter::calculate_plot_params ()
 
       double a, b;
       m_plot_model->bounds (i, a, b);
-      if (i == 0)
+      if (first)
         {
           m_x_min = a;
           m_x_max = b;
@@ -179,7 +180,7 @@ void graph_painter::calculate_plot_params ()
         }
 
       calculate_graph_vert_bounds (i, a, b);
-      if (i == 0)
+      if (first)
         {
           m_y_min = a;
           m_y_max = b;
@@ -192,6 +193,7 @@ void graph_painter::calculate_plot_params ()
           if (b > m_y_max)
             m_y_max = b;
         }
+      first = false;
     }
 
   double width = m_x_max - m_x_min;
@@ -223,33 +225,25 @@ void graph_painter::calculate_graph_vert_bounds (const int graph_num,
 {
   calculate_pivot_count ();
 
-  QPointF first, second;
+  bool discrete = m_plot_model->paint_config (graph_num, graph_role::discrete).toBool ();
 
-  double a, b;
-  m_plot_model->bounds (graph_num, a, b);
+  QPointF point;
 
-  first = m_plot_model->point_by_x (graph_num, a);
-  loc_min = first.y ();
-  loc_max = first.x ();
+  point = get_first_graph_point (graph_num, discrete);
 
-  double x = a;
+  loc_min = point.y ();
+  loc_max = point.y ();
 
-
-  double hx = (b - a)/(m_pivot_count - 1);
-  for (int j = 1; j < m_pivot_count; j++)
+  bool end = false;
+  int i = 0;
+  while (!end)
     {
-      x = a + hx * j;
+      point = get_next_graph_point (graph_num, discrete, i, end);
 
-      second = m_plot_model->point_by_x (graph_num, x);
-
-      second.setX (second.x ());
-      second.setY (second.y ());
-
-      first = second;
-      if (first.y () < loc_min)
-        loc_min = first.y ();
-      if (first.y () > loc_max)
-        loc_max = first.y ();
+      if (point.y () < loc_min)
+        loc_min = point.y ();
+      if (point.y () > loc_max)
+        loc_max = point.y ();
     }
 }
 
