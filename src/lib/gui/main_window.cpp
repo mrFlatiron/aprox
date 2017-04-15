@@ -48,7 +48,7 @@ void main_window::set_layouts ()
       int pc = m_plot_model->get_points_count ();
       m_points_count_edit = new QSpinBox (this);
       m_points_count_edit->setMinimum (2);
-      m_points_count_edit->setMaximum (10000000);
+      m_points_count_edit->setMaximum (50);
       spinbox_size = m_points_count_edit->width ();
       m_points_count_edit->setFixedWidth (spinbox_size);
       m_points_count_edit->setValue (pc);
@@ -66,7 +66,7 @@ void main_window::set_layouts ()
       hlo_1->addWidget (m_points_count_edit);
       hlo_1->addWidget (new stretch (this), 1);
     }
-    vlo_1->addLayout (hlo_1);
+    vlo_1->insertLayout ( -1, hlo_1);
 
     QHBoxLayout *hlo_2 = new QHBoxLayout;
     {
@@ -82,8 +82,9 @@ void main_window::set_layouts ()
         m_visible_graphs_box = new gui_checkbox_group (labels, this);
         connect (m_visible_graphs_box, SIGNAL (box_toggled (int, bool)), m_plot_model,
                  SLOT (change_visible_graphs (int, bool)));
+        connect (m_visible_graphs_box, SIGNAL (box_toggled (int, bool)), this, SLOT (on_newton_interpol_shown (int, bool)));
       }
-      hlo_2->addLayout (m_visible_graphs_box->as_layout ());
+      hlo_2->insertLayout ( -1, m_visible_graphs_box->as_layout ());
 
       QVBoxLayout *vlo_2 = new QVBoxLayout;
       {
@@ -93,8 +94,9 @@ void main_window::set_layouts ()
         m_discrepancy_box = new QComboBox (this);
         for (auto val : temp_labels)
           m_discrepancy_box->addItem (val);
-        m_discrepancy_box->setCurrentIndex (0);
         connect (m_discrepancy_box, SIGNAL (currentIndexChanged (int)), this, SLOT (on_discrepancy_pb_clicked ()));
+        connect (m_discrepancy_box, SIGNAL (currentIndexChanged (int)), this, SLOT (on_discrepancy_newton_shown (int)));
+        m_discrepancy_box->setCurrentIndex (1);
         if (m_source_type == data_source::file)
           {
             m_discrepancy_box->setDisabled (true);
@@ -104,9 +106,9 @@ void main_window::set_layouts ()
         vlo_2->addWidget (m_discrepancy_pb, 0, Qt::AlignLeft);
         vlo_2->addWidget (m_discrepancy_box);
       }
-      hlo_2->addLayout (vlo_2);
+      hlo_2->insertLayout ( -1, vlo_2);
     }
-    vlo_1->addLayout (hlo_2);
+    vlo_1->insertLayout ( -1, hlo_2);
   }
   setLayout (vlo_1);
 }
@@ -127,21 +129,21 @@ void main_window::open_greetings_window ()
         if (!fin)
           {
             fprintf (stderr, "no such file\n");
-            std::abort ();
+            return;
           }
-        unsigned int size;
+        int size;
         if (1 != fscanf (fin, "%d", &size))
           {
             fprintf (stderr, "wrong input format\n");
-            std::abort ();
+            return;
           }
         std::vector<double> xes, ys, additional;
         if (interpol::read_to_vector (fin, xes, size))
-          std::abort ();
+          return;
         if (interpol::read_to_vector (fin, ys, size))
-          std::abort ();
+          return;
         if (interpol::read_to_vector (fin, additional, size))
-          std::abort ();
+          return;
         fclose (fin);
         m_plot_model = new interpol_plot_model (xes, ys);
         m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
@@ -188,4 +190,22 @@ void main_window::on_discrepancy_pb_clicked ()
 {
   m_visible_graphs_box->uncheck_all ();
   m_plot_model->change_discrepancy_graph (m_discrepancy_box->currentIndex ());
+}
+
+void main_window::on_newton_interpol_shown (int graph, bool shown)
+{
+    if (graph != 1)
+        return;
+    if (shown)
+        m_points_count_edit->setMaximum (50);
+    if (!shown)
+        m_points_count_edit->setMaximum (10000);
+}
+
+void main_window::on_discrepancy_newton_shown (int index)
+{
+    if (index == 0 && !m_visible_graphs_box->get_checked_count())
+        m_points_count_edit->setMaximum (50);
+    else
+        m_points_count_edit->setMaximum (10000);
 }

@@ -206,10 +206,25 @@ void graph_painter::calculate_plot_params ()
   int work_height = d_height  - 2 * m_graphs_shift - m_ox_shift;
   int work_width = d_width - 2 * m_graphs_shift - m_oy_shift;
 
-  if (height > 1e-35)
-    m_y_scale = (work_height) / (m_y_max - m_y_min);
-  else
-    m_y_scale = (work_height) / 1e-30;
+
+  if (height < 1e-16)
+  {
+      if (fabs (m_y_max) < 1e-16)
+        m_y_max = 1;
+      else
+        m_y_max = m_y_max + fabs (m_y_max) / 10;
+      if (fabs (m_y_min) < 1e-16)
+        m_y_min = -1;
+      else
+        m_y_min = m_y_min - fabs (m_y_min) / 10;
+  }
+
+  height = m_y_max - m_y_min;
+
+  m_y_scale = (work_height) / (m_y_max - m_y_min);
+
+
+
 
 
 
