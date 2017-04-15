@@ -3,7 +3,7 @@
 
 double func_to_aprox (const double x)
 {
-  return  tan (x);
+  return  tg (x);
 }
 
 double deriv (const double x)

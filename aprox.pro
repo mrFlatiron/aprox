@@ -3,7 +3,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = app
 CONFIG += с++11
-CONFIG += debug
 
 SOURCES += \
     src/lib/gui/main_window.cpp \
