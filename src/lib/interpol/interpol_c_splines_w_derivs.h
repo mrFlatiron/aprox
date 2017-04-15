@@ -18,7 +18,7 @@ namespace interpol
     std::vector<std::unique_ptr<newton_mult_nodes>> m_loc_polynoms;
   public:
     c_splines_w_derivs ();
-    ~c_splines_w_derivs ();
+    virtual ~c_splines_w_derivs ();
     c_splines_w_derivs (const std::vector<double> &xes, const std::vector<double> &ys,
                         const std::vector<double> &derivs_);
     c_splines_w_derivs (const double a, const double b, const unsigned int size,

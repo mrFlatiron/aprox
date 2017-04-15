@@ -7,6 +7,11 @@ plot_widget::plot_widget (graph_painter *painter, QWidget *parent)
   m_painter = painter;
 }
 
+plot_widget::~plot_widget()
+{
+
+}
+
 QSize plot_widget::sizeHint () const
 {
   return QSize (1500, 1500);

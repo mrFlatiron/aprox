@@ -15,7 +15,6 @@ c_splines_w_derivs::c_splines_w_derivs ()
 
 c_splines_w_derivs::~c_splines_w_derivs ()
 {
-
 }
 
 c_splines_w_derivs::c_splines_w_derivs (const std::vector<double> &xes_,

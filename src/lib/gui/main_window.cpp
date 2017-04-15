@@ -26,6 +26,10 @@ main_window::main_window (QWidget *parent) : QDialog (parent)
 
 main_window::~main_window ()
 {
+  if (m_plot_drawer)
+    delete m_plot_drawer;
+  if (m_graph_painter)
+    delete m_graph_painter;
   if (m_plot_model)
     delete m_plot_model;
 }
@@ -150,9 +154,9 @@ void main_window::open_greetings_window ()
         {additional[0], additional[xes.size () - 1]});
         m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes,
                                     additional);
-        graph_painter *plot_painter = new graph_painter;
-        plot_painter->set_model (m_plot_model);
-        m_plot_drawer = new plot_widget (plot_painter, this);
+        m_graph_painter = new graph_painter;
+        m_graph_painter->set_model (m_plot_model);
+        m_plot_drawer = new plot_widget (m_graph_painter, this);
         connect (m_plot_model, SIGNAL (model_changed ()), m_plot_drawer, SLOT (update ()));
       }
       break;
@@ -165,15 +169,15 @@ void main_window::open_greetings_window ()
           min = max;
           max = buf;
         }
-      graph_painter *plot_painter = new graph_painter;
+      m_graph_painter = new graph_painter;
 
       m_plot_model = new interpol_plot_model (min, max, 2);
       m_plot_model->set_origin_func (std::function<double(const double)> (func_to_aprox));
       m_plot_model->add_interpol (interpol::polynom_type::c_spline_w_derivs,
       {deriv (min), deriv (max)});
       m_plot_model->add_interpol (interpol::polynom_type::newton_mult_nodes, deriv);
-      plot_painter->set_model (m_plot_model);
-      m_plot_drawer = new plot_widget (plot_painter, this);
+      m_graph_painter->set_model (m_plot_model);
+      m_plot_drawer = new plot_widget (m_graph_painter, this);
       connect (m_plot_model, SIGNAL (model_changed ()), m_plot_drawer, SLOT (update ()));
       break;
     }

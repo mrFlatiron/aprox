@@ -11,6 +11,7 @@ private:
   graph_painter *m_painter;
 public:
   plot_widget (graph_painter *painter, QWidget *parent);
+  ~plot_widget ();
   QSize sizeHint () const override;
   void set_painter (graph_painter *painter);
 protected:

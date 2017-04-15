@@ -10,6 +10,7 @@ class QSpinBox;
 class plot_widget;
 class QComboBox;
 class gui_checkbox_group;
+class graph_painter;
 
 class main_window : public QDialog
 {
@@ -18,6 +19,7 @@ private:
   QSpinBox *m_points_count_edit;
   QPushButton *m_discrepancy_pb;
   QComboBox *m_discrepancy_box;
+  graph_painter *m_graph_painter;
   plot_widget *m_plot_drawer;
   interpol_plot_model *m_plot_model;
   data_source m_source_type;
