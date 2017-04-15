@@ -3,22 +3,14 @@
 
 double func_to_aprox (const double x)
 {
-<<<<<<< HEAD
-  return  tan (x);
-=======
     (void)x;
   return  x * sin (x);
->>>>>>> origin/inclass
 }
 
 double deriv (const double x)
 {
   (void)x;
-<<<<<<< HEAD
-  return 1 / cos (x) / cos (x);
-=======
   return sin (x) + x * cos (x);
->>>>>>> origin/inclass
 }
 
 double id (const double x)
