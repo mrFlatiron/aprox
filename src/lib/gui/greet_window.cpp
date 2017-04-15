@@ -44,7 +44,7 @@ greet_window::greet_window (QWidget *parent) : QDialog (parent)
       hlo_bounds->addWidget (new QLabel ("x_max:",this), 0, Qt::AlignLeft);
       hlo_bounds->addWidget (m_max_edit, 1);
     }
-    vlo_main->addLayout (hlo_bounds);
+    vlo_main->insertLayout ( -1, hlo_bounds);
     QDialogButtonBox *bb = new QDialogButtonBox (QDialogButtonBox::Ok
                                                  | QDialogButtonBox::Cancel,
                                                  Qt::Horizontal, this);

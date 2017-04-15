@@ -21,6 +21,7 @@ public:
   gui_checkbox_group (const std::vector<QString> &labels, QWidget *parent);
   QLayout *as_layout () const;
   void uncheck_all ();
+  int get_checked_count ();
 private slots:
   void on_toggled (int id, bool checked);
 signals:

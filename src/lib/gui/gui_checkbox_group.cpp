@@ -44,7 +44,18 @@ void gui_checkbox_group::uncheck_all ()
     {
       if (pb->isChecked ())
         pb->toggle ();
+  }
+}
+
+int gui_checkbox_group::get_checked_count()
+{
+    int count = 0;
+    for (auto box : m_boxes)
+    {
+       if (box->isChecked ())
+           count++;
     }
+    return count;
 }
 
 void gui_checkbox_group::on_toggled (int id, bool checked)

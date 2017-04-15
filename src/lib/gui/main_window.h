@@ -36,4 +36,6 @@ private:
 private slots:
   void on_pc_slider_moved (int val);
   void on_discrepancy_pb_clicked ();
+  void on_newton_interpol_shown (int graph, bool shown);
+  void on_discrepancy_newton_shown (int index);
 };

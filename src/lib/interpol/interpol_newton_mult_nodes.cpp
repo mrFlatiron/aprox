@@ -98,7 +98,7 @@ void newton_mult_nodes::interpolate_function (const double a_, const double b_,
       a = b_;
       b = a_;
     }
-  m_points_count = points_count;
+  m_points_count = (points_count < 50) ? points_count : 50;
   m_x_min = a;
   m_x_max = b;
 
@@ -111,7 +111,12 @@ void newton_mult_nodes::interpolate_function (const double a_, const double b_,
     }
 
   double hx = (b - a) / (points_count - 1);
-  for (unsigned int i = 0; i < points_count; i++)
+  if (hx < EPS)
+    {
+      m_points_count = ceil ( (b - a) / EPS);
+    }
+
+  for (unsigned int i = 0; i < m_points_count; i++)
     {
       m_xes.push_back (a + i * hx);
       m_div_difs.push_back (f (m_xes[i]));
@@ -119,6 +124,7 @@ void newton_mult_nodes::interpolate_function (const double a_, const double b_,
     }
 
   find_bounds ();
+
   compute_div_difs ();
 }
 
