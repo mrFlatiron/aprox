@@ -36,11 +36,14 @@ main_window_v2::main_window_v2 (const double x_min, const double x_max, const in
   m_graph_painter = new graph_painter;
   m_graph_painter->set_model (m_plot_model);
   m_plot_drawer = new plot_widget (m_graph_painter, this);
-  m_mode = graph_mode::origin;
+
 
   m_points_count_edit = new QSpinBox (this);
   m_points_count_edit->setValue (pc);
   m_points_count_edit->setMinimum (2);
+
+  m_mode = graph_mode::origin;
+  m_points_count_edit->setDisabled (true);
 
   m_menu_bar = new QMenuBar (this);
 
