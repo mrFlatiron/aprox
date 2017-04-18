@@ -283,5 +283,42 @@ void interpol_plot_model::change_discrepancy_graph (int id)
   emit model_changed ();
 }
 
+void interpol_plot_model::set_only_origin_visible ()
+{
+
+  m_origin_shown = true;
+  m_discrepancy_id = -1;
+  for (int i = 0; i != (int)interpol::polynom_type::COUNT; i++)
+    m_interpol_shown[i] = false;
+
+  emit model_changed ();
+}
+
+void interpol_plot_model::set_only_discr_visible (int id)
+{
+  m_origin_shown = false;
+  m_discrepancy_id = id;
+  for (int i = 0; i != (int)interpol::polynom_type::COUNT; i++)
+    m_interpol_shown[i] = false;
+
+  emit model_changed ();
+}
+
+void interpol_plot_model::set_interpol_visible (int id)
+{
+  m_origin_shown = false;
+  m_discrepancy_id = -1;
+  m_interpol_shown[id] = true;
+
+  for (int i = 0; i != (int)interpol::polynom_type::COUNT; i++)
+    {
+      if (i == id)
+        continue;
+      m_interpol_shown[i] = false;
+    }
+
+  emit model_changed ();
+}
+
 
 

@@ -59,6 +59,9 @@ public:
 public slots:
   void change_visible_graphs (int id, bool shown);
   void change_discrepancy_graph (int id);
+  void set_only_origin_visible ();
+  void set_only_discr_visible (int id);
+  void set_interpol_visible (int id);
 
 private:
   void calc_id_for_diff ();

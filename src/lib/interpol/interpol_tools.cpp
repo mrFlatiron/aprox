@@ -51,3 +51,17 @@ QString interpol::type_to_string (const interpol::polynom_type type)
     }
   return "Add description to get_interpol_labels ()";
 }
+
+QString interpol::type_to_str (const interpol::polynom_type type)
+{
+  switch (type)
+    {
+    case interpol::polynom_type::newton_mult_nodes:
+      return "Newton";
+    case interpol::polynom_type::c_spline_w_derivs:
+      return "Cubic splines";
+    case interpol::polynom_type::COUNT:
+      return "Not implemented";
+    }
+  return "Error";
+}

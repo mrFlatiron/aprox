@@ -22,7 +22,8 @@ SOURCES += \
     src/lib/gui/gui_checkbox_group.cpp \
     src/lib/gui/gui_checkbox_w_id.cpp \
     src/lib/gui/graph_painter.cpp \
-    src/lib/gui/plot_widget.cpp
+    src/lib/gui/plot_widget.cpp \
+    src/lib/gui/main_window_v2.cpp
 
 HEADERS += \
     src/lib/gui/main_window.h \
@@ -44,7 +45,8 @@ HEADERS += \
     src/lib/gui/gui_checkbox_group.h \
     src/lib/gui/gui_checkbox_w_id.h \
     src/lib/gui/graph_painter.h \
-    src/lib/gui/plot_widget.h
+    src/lib/gui/plot_widget.h \
+    src/lib/gui/main_window_v2.h
 
 INCLUDEPATH += src/lib
 INCLUDEPATH += src

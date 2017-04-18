@@ -11,7 +11,7 @@ class graph_painter : public QPainter
 private:
   double m_x_scale = 1;
   double m_y_scale = 1;
-  double m_smooth = 10;
+  double m_smooth = 100;
   double m_graphs_shift = 15;
   double m_ox_shift = 50;
   double m_oy_shift = 70;
