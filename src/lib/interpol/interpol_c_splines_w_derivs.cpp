@@ -20,7 +20,7 @@ c_splines_w_derivs::~c_splines_w_derivs ()
 c_splines_w_derivs::c_splines_w_derivs (const std::vector<double> &xes_,
                                        const std::vector<double> &ys,
                                        const std::vector<double> &derivs_) :
-  m_loc_polynoms ()
+  m_coefs ()
 {
   interpolate_points (xes_, ys, derivs_);
 }
@@ -28,7 +28,7 @@ c_splines_w_derivs::c_splines_w_derivs (const std::vector<double> &xes_,
 c_splines_w_derivs::c_splines_w_derivs (const double a_, const double b_, const unsigned int size,
                                         std::function<double(const double)> f,
                                         const std::vector<double> &additional) :
-  m_loc_polynoms ()
+  m_coefs ()
 {
   interpolate_function (a_, b_, size, f, additional);
 }
@@ -70,34 +70,53 @@ void c_splines_w_derivs::compute_derivs (const std::vector<double> &xes, const s
 void c_splines_w_derivs::compute_loc_polynoms (const std::vector<double> &xes, const std::vector<double> &ys,
                                                const std::vector<double> &derivs)
 {
-    m_loc_polynoms.reserve (m_points_count - 1);
+  m_coefs.clear ();
+  m_coefs.resize (4 * m_points_count - 4);
+  m_xes = xes;
   for (unsigned int i = 0; i < m_points_count - 1; i++)
     {
-      std::vector<double> x, y, d;
-      x = {xes[i], xes[i + 1]};
-      y = {ys[i], ys[i + 1]};
-      d = {derivs[i], derivs[i + 1]};
-      if (i > 0)
-          continue;
-      m_loc_polynoms.push_back (std::unique_ptr<newton_mult_nodes>
-                                (create_polynom<newton_mult_nodes> (x, y, d)));
+      int coef_iter = i * 4;
+      double c1, c2, c3, c4;
+      double d1 = derivs[i];
+      double d2 = derivs[i + 1];
+      double y1 = ys[i];
+      double y2 = ys[i + 1];
+      double x1 = m_xes[i];
+      double x2 = m_xes[i + 1];
+      double x_dif = x2 - x1;
+      double div_dif = (y2 - y1) / x_dif;
+      c1 = y1;
+      c2 = d1;
+      c3 = (3 * div_dif - 2 * d1 - d2) / x_dif;
+      c4 = (d1 + d2 - 2 * div_dif) / x_dif / x_dif;
+      m_coefs[coef_iter] = c1;
+      m_coefs[coef_iter + 1] = c2;
+      m_coefs[coef_iter + 2] = c3;
+      m_coefs[coef_iter + 3] = c4;
     }
 }
 
 double c_splines_w_derivs::operator () (const double x) const
 {
+  int i = -1, coef_i;
   if (x >= m_x_max)
-    return m_loc_polynoms[m_points_count - 2]->eval (x);
+    i = m_points_count - 2;
   if (x <= m_x_min)
-    return m_loc_polynoms[0]->eval (x);
-  auto it = std::find_if (m_loc_polynoms.begin (), m_loc_polynoms.end (),
-                          [&] (const std::unique_ptr<newton_mult_nodes> &p)
-  {return p->is_in_range (x);});
-  return (*it)->eval (x);
-  return m_loc_polynoms[0]->eval (x);
+    i = 0;
+  if (i == -1)
+    {
+      i = bin_search (m_xes.data (), 0, m_points_count - 1, x);
+      i--;
+    }
+//  i = 0;
+  coef_i = i * 4;
+  double dif = x - m_xes[i];
+  return m_coefs[coef_i] + dif * m_coefs[coef_i + 1] +
+      m_coefs[coef_i + 2] * dif * dif + m_coefs[coef_i + 3] *
+      dif * dif * dif;
 }
 
-int c_splines_w_derivs::get_points_count() const
+int c_splines_w_derivs::get_points_count () const
 {
   return (int)m_points_count;
 }
@@ -107,8 +126,6 @@ void c_splines_w_derivs::interpolate_function (const double a_, const double b_,
                                                std::function<double (const double)> f,
                                                const std::vector<double> &additional)
 {
-  m_loc_polynoms.clear ();
-
   double a = a_;
   double b = b_;
   if (a_ > b_)
@@ -155,7 +172,6 @@ void c_splines_w_derivs::interpolate_points (const std::vector<double> &xes_,
                                              const std::vector<double> &ys,
                                              const std::vector<double> &derivs_)
 {
-  m_loc_polynoms.clear ();
 
   std::vector<double> xes = xes_;
   std::sort (xes.begin (), xes.end ());

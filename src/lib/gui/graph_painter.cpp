@@ -201,7 +201,7 @@ void graph_painter::calculate_plot_params ()
       first = false;
     }
 
-  m_max_abs_val = (fabs (m_y_min) < fabs (m_y_max)) ? fabs (m_y_min) : fabs (m_y_max);
+  m_max_abs_val = (fabs (m_y_min) < fabs (m_y_max)) ? fabs (m_y_max) : fabs (m_y_min);
 
   double width = m_x_max - m_x_min;
   double height = m_y_max - m_y_min;

@@ -15,7 +15,8 @@ namespace interpol
     unsigned int m_points_count;
     double m_x_min;
     double m_x_max;
-    std::vector<std::unique_ptr<newton_mult_nodes>> m_loc_polynoms;
+    std::vector<double> m_xes;
+    std::vector<double> m_coefs;
   public:
     c_splines_w_derivs ();
     virtual ~c_splines_w_derivs ();

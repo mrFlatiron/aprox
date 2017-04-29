@@ -19,5 +19,7 @@ namespace interpol
   QString type_to_string (const polynom_type type);
   QString type_to_str (const polynom_type type);
 }
+int bin_search (const double *vect, const int begin, const int end,
+                const double x);
 
 #endif // INTERPOL_TOOLS_H

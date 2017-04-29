@@ -2,6 +2,7 @@
 #include "interpol_factory.h"
 #include <QString>
 #include <clocale>
+#include <vector>
 
 int interpol::read_to_vector (FILE *fin, std::vector<double> &vec, const unsigned int size)
 {
@@ -64,4 +65,15 @@ QString interpol::type_to_str (const interpol::polynom_type type)
       return "Not implemented";
     }
   return "Error";
+}
+
+int bin_search (const double *vect, const int begin, const int end,
+                const double x)
+{
+  if (end - begin == 0)
+    return begin;
+  int mid = (begin + end) / 2;
+  if (x > (vect[mid]))
+    return bin_search (vect, mid + 1, end, x);
+  return bin_search (vect, begin, mid, x);
 }
