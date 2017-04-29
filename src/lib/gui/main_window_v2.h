@@ -28,6 +28,7 @@ private:
   QSpinBox *m_points_count_edit;
   QMenuBar *m_menu_bar;
   QAction *m_actions[(int)graph_mode::COUNT];
+  QLineEdit *m_discrepancy_box;
   graph_mode m_mode = graph_mode::origin;
 public:
 

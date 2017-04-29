@@ -49,6 +49,11 @@ void c_splines_w_derivs::compute_derivs (const std::vector<double> &xes, const s
     {
       buf = xes[i + 1] - xes[i];
 
+      if (fabs (buf) < 1e-16)
+      {
+          printf ("zero division\n");
+          std::abort ();
+      }
       matrix.set_row (i, buf, 2 * (xes[i + 1] - xes[i - 1]), x_dif);
 
       rhs[i] = 3 * div_dif * (buf);
@@ -65,18 +70,21 @@ void c_splines_w_derivs::compute_derivs (const std::vector<double> &xes, const s
 void c_splines_w_derivs::compute_loc_polynoms (const std::vector<double> &xes, const std::vector<double> &ys,
                                                const std::vector<double> &derivs)
 {
+    m_loc_polynoms.reserve (m_points_count - 1);
   for (unsigned int i = 0; i < m_points_count - 1; i++)
     {
       std::vector<double> x, y, d;
       x = {xes[i], xes[i + 1]};
       y = {ys[i], ys[i + 1]};
       d = {derivs[i], derivs[i + 1]};
+      if (i > 0)
+          continue;
       m_loc_polynoms.push_back (std::unique_ptr<newton_mult_nodes>
                                 (create_polynom<newton_mult_nodes> (x, y, d)));
     }
 }
 
-double c_splines_w_derivs::operator ()(const double x) const
+double c_splines_w_derivs::operator () (const double x) const
 {
   if (x >= m_x_max)
     return m_loc_polynoms[m_points_count - 2]->eval (x);
@@ -86,6 +94,7 @@ double c_splines_w_derivs::operator ()(const double x) const
                           [&] (const std::unique_ptr<newton_mult_nodes> &p)
   {return p->is_in_range (x);});
   return (*it)->eval (x);
+  return m_loc_polynoms[0]->eval (x);
 }
 
 int c_splines_w_derivs::get_points_count() const
@@ -135,8 +144,9 @@ void c_splines_w_derivs::interpolate_function (const double a_, const double b_,
   double d1 = additional[0];
   double dn = additional[1];
 
+  printf ("begin deriv\n");
   compute_derivs (xes, ys, derivs, d1, dn);
-
+  printf ("end deriv\n");
   compute_loc_polynoms (xes, ys, derivs);
 
 }

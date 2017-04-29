@@ -56,6 +56,11 @@ void graph_painter::draw_axis ()
         || (fabs (y_max_text - y_o_text) < 10)))
     drawText (m_oy_shift - 35, y_o_text, QString::number (0));
 
+  QPointF max_val_text_point = to_scale (QPointF (m_x_max, m_y_max));
+  max_val_text_point.setX (max_val_text_point.x () - 120);
+
+  drawText (max_val_text_point, QString ("max:%1") .arg (QString::number (m_max_abs_val, 'e', 2)));
+
 }
 
 void graph_painter::draw_graph (const int graph_num)
@@ -195,6 +200,8 @@ void graph_painter::calculate_plot_params ()
         }
       first = false;
     }
+
+  m_max_abs_val = (fabs (m_y_min) < fabs (m_y_max)) ? fabs (m_y_min) : fabs (m_y_max);
 
   double width = m_x_max - m_x_min;
   double height = m_y_max - m_y_min;

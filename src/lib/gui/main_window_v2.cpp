@@ -6,6 +6,7 @@
 #include <QMenuBar>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QLineEdit>
 
 #include "interpol_plot_model.h"
 #include "graph_painter.h"
@@ -47,6 +48,10 @@ main_window_v2::main_window_v2 (const double x_min, const double x_max, const in
 
   m_menu_bar = new QMenuBar (this);
 
+//  m_discrepancy_box = new QLineEdit (this);
+//  m_discrepancy_box->setReadOnly (true);
+//  m_discrepancy_box->setMinimumWidth (50);
+
   set_layouts ();
   do_connects ();
 }
@@ -78,6 +83,7 @@ void main_window_v2::set_layouts ()
 
     vlo_1->addWidget (m_plot_drawer);
 
+
     vlo_1->addWidget (m_points_count_edit, 0, Qt::AlignLeft);
   }
   this->setLayout (vlo_1);
@@ -107,6 +113,7 @@ QString main_window_v2::get_action_name (const graph_mode mode)
     case graph_mode::COUNT:
       return "Not implemented";
     }
+  return "";
 }
 
 void main_window_v2::on_menu_bar (QAction *action)
@@ -135,14 +142,14 @@ void main_window_v2::on_menu_bar (QAction *action)
     {
       m_plot_model->set_interpol_visible ((int)interpol::polynom_type::c_spline_w_derivs);
       m_points_count_edit->setEnabled (true);
-      m_points_count_edit->setMaximum (10000);
+      m_points_count_edit->setMaximum (30000000);
       return;
     }
   if (action == m_actions[(int)graph_mode::discrepancy_splines])
     {
       m_plot_model->set_only_discr_visible ((int)interpol::polynom_type::c_spline_w_derivs);
       m_points_count_edit->setEnabled (true);
-      m_points_count_edit->setMaximum (10000);
+      m_points_count_edit->setMaximum (30000000);
       return;
     }
   return;

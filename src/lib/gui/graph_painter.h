@@ -15,8 +15,9 @@ private:
   double m_graphs_shift = 15;
   double m_ox_shift = 50;
   double m_oy_shift = 70;
-  double m_y_min;
-  double m_y_max;
+  double m_y_min = -1;
+  double m_y_max = 1;
+  double m_max_abs_val = 0;
   double m_x_min;
   double m_x_max;
   int m_pivot_count;
