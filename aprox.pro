@@ -50,3 +50,5 @@ HEADERS += \
 
 INCLUDEPATH += src/lib
 INCLUDEPATH += src
+
+QMAKE_CXXFLAGS += -std=c++11

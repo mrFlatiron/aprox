@@ -142,6 +142,7 @@ void interpol_plot_model::reinterpolate ()
                                                 m_origin, m_additional_vectors[i]);
               break;
             case interpol::additional_array_size::x_size:
+              if (m_interpol_shown[i])
               m_interpols[i]->interpolate_function (m_x_min, m_x_max, m_points_count,
                                                     m_origin, m_additional_funcs[i]);
               break;
